@@ -1,0 +1,119 @@
+﻿@{
+    ViewData["Title"] = "Product Detail";
+}
+@model it15_palit.Models.CartViewModel;
+
+@if (TempData["Message"] != null)
+{
+    <div class="toast align-items-center bg-blue border-0 position-fixed top-0 end-0" style="margin-top: 7rem;" role="alert" aria-live="assertive" aria-atomic="true" id="toast">
+        <div class="d-flex">
+            <div class="toast-body text-white">
+                @TempData["Message"]
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    </div>
+}
+<a asp-action="Shop" asp-controller="Home" class="text-decoration-none d-flex align-items-center">
+    <i class="ri-arrow-left-line"></i>
+    <small class="ms-1">Go Back</small>
+</a>
+<input type="hidden" id="productId" class="form-control" value="@ViewBag.ProductId" readonly />
+<div class="container-fluid bg-white rounded">
+    <div class="row">
+        <div class="col-6 d-flex justify-content-center align-items-center">
+            <img src="~/@ViewBag.ProductImage" class="img-fluid w-75" />
+        </div>
+
+        <div class="col-6 p-3">
+            <h2>@ViewBag.ProductName</h2>
+            <div class="container rounded p-3 bg-light">
+                <span class="fs-3 fw-bold">₱@ViewBag.ProductPrice</span>
+            </div>
+            <div class="row mt-3">
+                <div class="col-3 d-flex align-items-center">
+                    <small>Quantity</small>
+                </div>
+                <div class="col-9 d-flex align-items-center">
+                    <div class="input-group">
+                        <button class="btn border input-group-text" id="decrease">-</button>
+                        <input id="quantity" class="form-control text-center" style="max-width: 60px;" type="number" value="1" min="1" />
+                        <button class="btn border input-group-text" id="increase">+</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="container mt-5 p-0 d-flex align-items-center">
+                @if (Context.User.Identity.Name != null)
+                {
+                    <form asp-action="AddToCart" asp-controller="Shop" method="post">
+                        <input type="hidden" name="customerId" value="@Context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value" />
+                        <input type="hidden" name="productId" value="@ViewBag.ProductId" />
+                        <input type="hidden" name="quantity" id="quantityInput" value="1" />
+                        <button type="submit" class="btn br-blue me-3 p-3">+ Add to Cart</button>
+                    </form>
+                }
+                else
+                {
+                    <a asp-action="Login" asp-controller="Auth" class="btn br-blue me-3 p-3">+ Add to Cart</a>
+                }
+                @if (Context.User.Identity.Name != null)
+                {
+                    <form asp-action="BuyNow" asp-controller="Shop" method="post">
+                        <input type="hidden" name="customerId" value="@Context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value" />
+                        <input type="hidden" name="productId" value="@ViewBag.ProductId" />
+                        <input type="hidden" name="quantity" id="quantityInputBuy" value="1" />
+                        <button type="submit" class="btn bg-blue me-3 p-3">Buy Now</button>
+                    </form>
+                }
+                else
+                {
+                    <a asp-action="Login" asp-controller="Auth" class="btn bg-blue text-white p-3">Buy Now</a>
+                }
+            </div>
+
+
+             <div class="container mt-5 p-2 rounded bg-light">
+                <span>About Product</span>      
+                <p>@ViewBag.ProductDescription</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('decrease').addEventListener('click', function() {
+        let input = document.getElementById('quantity');
+        let value = parseInt(input.value);
+        if (value > parseInt(input.min)) {
+            input.value = value - 1;
+            document.getElementById('quantityInput').value = input.value;
+            document.getElementById('quantityInputBuy').value = input.value;
+        }
+    });
+
+    document.getElementById('increase').addEventListener('click', function() {
+        let input = document.getElementById('quantity');
+        let value = parseInt(input.value);
+        input.value = value + 1;
+        document.getElementById('quantityInput').value = input.value;
+        document.getElementById('quantityInputBuy').value = input.value;
+
+    });
+
+    document.getElementById('quantity').addEventListener('input', function () {
+        let input = document.getElementById('quantity');
+        document.getElementById('quantityInput').value = input.value;
+    });
+
+    document.getElementById('increase').addEventListener('click', function () {
+        var value = document.getElementById('quantity').value;
+        document.getElementById('quantityInput').value = value;
+    });
+
+    document.getElementById('decrease').addEventListener('click', function () {
+        var value = document.getElementById('quantity').value;
+        document.getElementById('quantityInput').value = value;
+    });
+
+</script>

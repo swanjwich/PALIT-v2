@@ -1,0 +1,301 @@
+﻿@{
+    ViewData["Title"] = "My Shopping Cart";
+}
+
+@model List<it15_palit.Entity.Cart>
+
+<h1>@ViewData["Title"]</h1>
+
+<div class="toast align-items-center bg-blue border-0 position-fixed top-0 end-0" style="margin-top: 7rem;" role="alert" aria-live="assertive" aria-atomic="true" id="toast">
+    <div class="d-flex">
+        <div class="toast-body text-white">
+        </div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+    </div>
+</div>
+
+@if (Model.Any())
+{
+    <div class="row bg-white p-2 mt-3 rounded">
+        <div class="col-4 text-start">Product Name</div>
+        <div class="col-2 text-end">Unit Price</div>
+        <div class="col-2 text-end">Quantity</div>
+        <div class="col-2 text-end">Total Price</div>
+        <div class="col-2 text-end">Actions</div>
+    </div>
+
+    @foreach (var item in Model)
+    {
+        <div class="row py-2 mt-5 bg-white rounded" id="product-row-@item.Product_Id">
+            <!--Product Name-->
+            <div class="col-4 d-flex align-items-center text-start">
+                <input type="checkbox" class="form-check-input me-2 product-checkbox" @if (item.Is_Checked){ <text>checked</text>} data-product-id="@item.Product_Id" data-price="@item.Product.Price" />
+                <img src="~/@item.Product.Image_url" class="w-50" />
+                <span class="ms-2">@item.Product.Name</span>
+            </div>
+
+            <!--Product Unit Price-->
+            <div class="col-2 d-flex align-center">₱@item.Product.Price</div>
+
+            <!--Quantity-->
+            <div class="col-2 p-0 align-center">
+                <div class="input-group align-center">
+                    <button type="button" class="btn border input-group-text decrease-btn" data-product-id="@item.Product_Id">-</button>
+                    <input id="quantityInput-@item.Product_Id" class="form-control text-center" style="max-width: 60px;" type="number" value="@item.Quantity" min="1" readonly />
+                    <button type="button" class="btn border input-group-text increase-btn" data-product-id="@item.Product_Id">+</button>
+                </div>
+            </div>
+
+            <!--Total Price (price*quantity) -->
+            <div class="col-2 align-center text-end total-price">₱@(item.Product.Price * item.Quantity)</div>
+
+            <!--Delete button -->
+            <div class="col-2 align-center text-end">
+                <form asp-action="Remove" method="post" class="d-inline" onsubmit="event.preventDefault(); deleteProduct(@item.Product_Id);">
+                    <button type="submit" class="btn br-blue btn-sm ms-2 align-center">
+                        <i class="ri-delete-bin-line"></i>
+                        <span class="d-none d-sm-inline">Delete</span>
+                    </button>
+                </form>
+
+            </div>
+        </div>
+    }
+
+    <div class="row align-items-center bg-white mt-5 py-3">
+        <div class="col-6 d-flex align-items-center">
+            <input type="checkbox" id="selectAll" class="form-check-input me-2">
+            <label for="selectAll" class="me-3">Select All</label>
+            <button class="btn btn-light ms-2" id="deleteSelectedButton">Delete</button>
+        </div>
+        <div class="col-6 align-center">
+            <span>Total (<span id="checked-item-count">@Model.Count(c => c.Is_Checked)</span> items): 
+                <span id="total-amount" class="fs-3 text-blue">₱@Model.Where(c => c.Is_Checked).Sum(item => item.Product.Price * item.Quantity)</span>
+            </span>
+
+            <a class="btn bg-blue text-white ms-2" id="checkoutButton" asp-controller="Shop" asp-action="CheckOut">Check Out</a>
+        </div>
+    </div>
+}
+else
+{
+    <div class="text-center">
+        <i class="ri-shopping-cart-line text-blue" style="font-size: 10rem;"></i>
+        <p class="mt-2">Your cart is empty. Start shopping now!</p>
+    </div>
+}
+
+<script>
+    function calculateTotal() {
+        let totalAmount = 0;
+        let checkedCount = 0;
+
+        document.querySelectorAll('.product-checkbox:checked').forEach(function (checkbox) {
+            let productId = checkbox.getAttribute('data-product-id');
+            let price = parseFloat(checkbox.getAttribute('data-price'));
+            let quantity = parseInt(document.getElementById('quantityInput-' + productId).value);
+            totalAmount += price * quantity;
+            checkedCount++;
+        });
+        document.getElementById('total-amount').textContent = '₱' + totalAmount.toFixed(2);
+        document.getElementById('checked-item-count').textContent = checkedCount;
+
+        const checkoutButton = document.getElementById('checkoutButton');
+        if (checkedCount === 0) {
+            checkoutButton.classList.add('disabled');
+        } else {
+            checkoutButton.classList.remove('disabled');
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        calculateTotal();
+    });
+
+    document.getElementById('checkoutButton').addEventListener('click', function (event) {
+        if (this.classList.contains('disabled')) {
+            event.preventDefault();
+        }
+    });
+
+    document.querySelectorAll('.product-checkbox').forEach(function (checkbox) {
+        checkbox.addEventListener('change', function () {
+            calculateTotal();
+            let productId = this.getAttribute('data-product-id');
+            let isChecked = this.checked;
+            updateCheckedStatus(productId, isChecked);
+        });
+    });
+
+    document.getElementById('selectAll').addEventListener('change', function () {
+        let isChecked = this.checked;
+        document.querySelectorAll('.product-checkbox').forEach(function (checkbox) {
+            checkbox.checked = isChecked;
+            let productId = checkbox.getAttribute('data-product-id');
+            updateCheckedStatus(productId, isChecked);
+        });
+        calculateTotal();
+    });
+
+
+
+    document.querySelectorAll('.decrease-btn').forEach(function (decreaseButton) {
+        decreaseButton.addEventListener('click', function () {
+            let productId = this.getAttribute('data-product-id');
+            let input = document.getElementById('quantityInput-' + productId);
+            let value = parseInt(input.value);
+            if (value > parseInt(input.min)) {
+                input.value = value - 1;
+                updateQuantity(productId, input.value);
+                calculateTotal();
+            }
+        });
+    });
+
+    document.querySelectorAll('.increase-btn').forEach(function (increaseButton) {
+        increaseButton.addEventListener('click', function () {
+            let productId = this.getAttribute('data-product-id');
+            let input = document.getElementById('quantityInput-' + productId);
+            let value = parseInt(input.value);
+            input.value = value + 1;
+            updateQuantity(productId, input.value);
+            calculateTotal();
+        });
+    });
+
+    function updateQuantity(productId, newQuantity) {
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("EditQuantity")', 
+            data: {
+                productId: productId,
+                newQuantity: newQuantity
+            },
+            success: function (response) {
+                // Update total price for this product row
+                let totalPriceElement = document.querySelector(`#product-row-${productId} .total-price`);
+                totalPriceElement.textContent = '₱' + response.newTotalPrice;
+                calculateTotal();
+
+                if (response.message) {
+                    var toastEl = document.getElementById('toast');
+                    var toastBody = toastEl.querySelector('.toast-body');
+                    toastBody.textContent = response.message; // Set the message
+                    var toast = new bootstrap.Toast(toastEl);
+                    toast.show();
+                } else {
+                    var toastEl = document.getElementById('toast');
+                    var toast = new bootstrap.Toast(toastEl);
+                    toast.hide();
+                }
+            },
+            error: function (xhr, status, error) {
+                alert("Error updating quantity: " + error);
+            }
+        });
+    }
+
+    function deleteProduct(productId) {
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("RemoveProduct")',
+            data: {
+                productId: productId
+            },
+            success: function (response) {
+                // Remove the product row from the UI
+                document.getElementById(`product-row-${productId}`).remove();
+                calculateTotal();
+
+                if (response.message) {
+                    var toastEl = document.getElementById('toast');
+                    var toastBody = toastEl.querySelector('.toast-body');
+                    toastBody.textContent = response.message; // Set the message
+                    var toast = new bootstrap.Toast(toastEl);
+                    toast.show();
+                } else {
+                    var toastEl = document.getElementById('toast');
+                    var toast = new bootstrap.Toast(toastEl);
+                    toast.hide();
+                }
+            },
+            error: function (xhr, status, error) {
+                alert("Error deleting product: " + error);
+            }
+        });
+    }
+
+    function updateCheckedStatus(productId, isChecked) {
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("UpdateCheckedStatus")',
+            data: {
+                productId: productId,
+                isChecked: isChecked
+            },
+            success: function (response) {
+                if (response.message) {
+                    console.log(response.message); 
+                }
+            },
+            error: function (xhr, status, error) {
+                alert("Error updating checked status: " + error);
+            }
+        });
+    }
+
+    document.querySelectorAll('.product-checkbox').forEach(function (checkbox) {
+        checkbox.addEventListener('change', function () {
+            let productId = this.getAttribute('data-product-id');
+            let isChecked = this.checked;
+            updateCheckedStatus(productId, isChecked);
+        });
+    });
+
+
+    document.getElementById('deleteSelectedButton').addEventListener('click', function () {
+        let selectedIds = [];
+        document.querySelectorAll('.product-checkbox:checked').forEach(function (checkbox) {
+            selectedIds.push(checkbox.getAttribute('data-product-id'));
+
+        });
+
+        if (selectedIds.length === 0) {
+            alert("No items selected for deletion.");
+            return;
+        }
+
+        if (confirm("Are you sure you want to delete the selected items?")) {
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("RemoveAll")',
+                data: {
+                    productIds: selectedIds
+                },
+                success: function (response) {
+                    selectedIds.forEach(function (productId) {
+                        document.getElementById(`product-row-${productId}`).remove();
+                    });
+                    calculateTotal();
+
+                    if (response.message) {
+                        var toastEl = document.getElementById('toast');
+                        var toastBody = toastEl.querySelector('.toast-body');
+                        toastBody.textContent = response.message; // Set the message
+                        var toast = new bootstrap.Toast(toastEl);
+                        toast.show();
+                    } else {
+                        var toastEl = document.getElementById('toast');
+                        var toast = new bootstrap.Toast(toastEl);
+                        toast.hide();
+                    }
+                },
+                error: function (xhr, status, error) {
+                    alert("Error deleting selected products: " + error);
+                }
+            });
+        }
+    });
+
+
+</script>

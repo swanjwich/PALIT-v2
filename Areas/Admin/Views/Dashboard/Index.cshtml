@@ -1,0 +1,126 @@
+﻿@{
+    ViewData["Title"] = "Dashboard";
+    ViewData["Header"] = "Dashboard";
+}
+
+@if (TempData["Message"] != null)
+{
+    <div class="toast align-items-center bg-blue border-0 position-fixed top-0 end-0" style="margin-top: 3rem;" role="alert" aria-live="assertive" aria-atomic="true" id="toast">
+        <div class="d-flex">
+            <div class="toast-body text-white">
+                @TempData["Message"]
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    </div>
+}
+
+<div class="content py-4">
+    <!-- start: summary -->
+    <div class="row g-3">
+        <div class="col-12 col-sm-6 col-lg-3">
+            <a href="#"
+               class="text-dark text-decoration-none bg-white p-3 rounded shadow-sm d-flex justify-content-between summary-primary">
+                <div>
+                    <i class="ri-money-dollar-circle-line summary-icon bg-primary mb-2"></i>
+                    <div>Total Sales</div>
+                </div>
+                <h3>₱@ViewBag.TotalSales.ToString("N2")</h3>
+            </a>
+        </div>
+        <div class="col-12 col-sm-6 col-lg-3">
+            <a href="#"
+               class="text-dark text-decoration-none bg-white p-3 rounded shadow-sm d-flex justify-content-between summary-success">
+                <div>
+                    <i class="ri-shopping-cart-2-line summary-icon bg-success mb-2"></i>
+                    <div>Total Orders</div>
+                </div>
+                <h3>@ViewBag.TotalOrders.ToString()</h3>
+            </a>
+        </div>
+        <div class="col-12 col-sm-6 col-lg-3">
+            <a href="#"
+               class="text-dark text-decoration-none bg-white p-3 rounded shadow-sm d-flex justify-content-between summary-info">
+                <div>
+                    <i class="ri-team-line summary-icon bg-info mb-2"></i>
+                    <div>Total Customers</div>
+                </div>
+                <h3>@ViewBag.TotalCustomers.ToString()</h3>
+            </a>
+        </div>
+        <div class="col-12 col-sm-6 col-lg-3">
+            <a href="#"
+               class="text-dark text-decoration-none bg-white p-3 rounded shadow-sm d-flex justify-content-between summary-danger">
+                <div>
+                    <i class="ri-shopping-bag-line summary-icon bg-danger mb-2"></i>
+                    <div>Total Products</div>
+                </div>
+                <h3>@ViewBag.TotalProducts.ToString()</h3>
+            </a>
+        </div>
+    </div>
+    <!-- end: summary -->
+    <!-- start: Graph -->
+    <div class="row g-3 mt-2">
+        <div class="col-12 col-md-7 col-xl-8">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-white">
+                    Sales
+                </div>
+                <div class="card-body">
+                    <canvas id="sales-chart"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-md-5 col-xl-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-white">
+                    Customers
+                </div>
+                <div class="card-body">
+                    <canvas id="visitors-chart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- end: Graph -->
+    <!-- start: Latest orders table -->
+    <div class="row g-3 mt-2">
+        <div class="col-12 col-md-7 col-xl-12">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-white">
+                    Latest Orders
+                </div>
+                <div class="card-body">
+                    <table class="table">
+                        <tbody>
+                            <tr>
+                                <th scope="row">1</th>
+                                <td>Mark</td>
+                                <td>Otto</td>
+                                <td>mdo</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">2</th>
+                                <td>Jacob</td>
+                                <td>Thornton</td>
+                                <td>fat</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">3</th>
+                                <td colspan="2">Larry the Bird</td>
+                                <td>twitter</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">4</th>
+                                <td>John</td>
+                                <td>Doe</td>
+                                <td>johnD@email.com</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

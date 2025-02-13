@@ -1,0 +1,54 @@
+﻿<div class="modal fade" id="editProductModal" tabindex="-1" aria-labelledby="editProductModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editProductModalLabel">Edit Product</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form method="post" action="@Url.Action("Edit", "Products")" enctype="multipart/form-data">
+                    <input type="hidden" id="editProductId" name="Id" />
+                    <div class="mb-3">
+                        <label for="editProductName" class="form-label">Product Name</label>
+                        <input type="text" class="form-control" id="editProductName" name="Name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editProductDescription" class="form-label">Description</label>
+                        <textarea class="form-control" id="editProductDescription" name="Description" required></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editProductPrice" class="form-label">Price</label>
+                        <input type="number" class="form-control" id="editProductPrice" name="Price" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editProductStock" class="form-label">Stock Quantity</label>
+                        <input type="number" class="form-control" id="editProductStock" name="Stock_quantity" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editProductCategory" class="form-label">Category</label>
+                        <select class="form-select" id="editProductCategory" name="CategoryId" required>
+                            <option value="" disabled selected>Select a category</option>
+                            @foreach (var category in ViewBag.Categories as List<it15_palit.Entity.Category>)
+                            {
+                                <option value="@category.Id">@category.Name</option>
+                            }
+                        </select>
+                    </div>
+                    <label for="currentImage" class="form-label">Current Image</label>
+                    <div class="mb-3">
+                        <img id="currentImage" src="" alt="Current Product Image" width="90" height="90" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="editProductImage" class="form-label">Product Image</label>
+                        <input type="file" class="form-control" id="editProductImage" name="Image" accept="image/*">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Save changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

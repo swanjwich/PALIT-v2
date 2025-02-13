@@ -1,0 +1,157 @@
+﻿
+<div class="sidebar position-fixed top-0 start-0 bottom-0 bg-white border-end">
+    <div class="d-flex align-items-center p-2 mt-2">
+        <i><img src="~/images/logo.png" class="sidebar-logo"></i>
+        <a href="#" class="sidebar-name text-uppercase fw-bold text-decoration-none text-blue fs-4 fw-italic">
+            Palit
+        </a>
+        <i class="sidebar-toggle ri-arrow-left-circle-line ms-auto fs-5 me-3 d-block d-md-none"></i>
+    </div>
+
+    <ul class="sidebar-menu p-3 mt-1 mb-0">
+        <li class="sidebar-menu-item m">
+            <a asp-action="Index" asp-controller="Dashboard" title="Dashboard" class="sidebar-link">
+                <i class="sidebar-menu-item-icon ri-dashboard-3-line"></i>
+                Dashboard
+            </a>
+        </li>
+
+        <li class="sidebar-menu-divider mt-2 mb-1 text-uppercase">Navigation Menu</li>
+
+        <li class="sidebar-menu-item">
+            <a asp-action="Products" asp-controller="Products" title="Products" class="sidebar-link">
+                <i class="ri-shopping-bag-line sidebar-menu-item-icon"></i>
+                Products
+            </a>
+        </li>
+
+        <li class="sidebar-menu-item">
+            <a href="#" title="Categories" class="sidebar-link">
+                <i class="ri-dashboard-line sidebar-menu-item-icon"></i>
+                Categories
+            </a>
+        </li>
+
+
+        <li class="sidebar-menu-item">
+            <a asp-action="Orders" asp-controller="Orders" title="Orders" class="sidebar-link">
+                <i class="ri-shopping-cart-line sidebar-menu-item-icon"></i>
+                Orders
+            </a>
+        </li>
+
+        <li class="sidebar-menu-item">
+            <a href="#" title="Customers" class="sidebar-link">
+                <i class="ri-team-line sidebar-menu-item-icon"></i>
+                Customers
+            </a>
+        </li>
+
+        <li class="sidebar-menu-item has-dropdown">
+            <a href="#" title="Inventory" class="sidebar-link">
+                <i class="ri-list-check sidebar-menu-item-icon"></i>
+                Inventory
+                <i class="ri-arrow-down-s-line sidebar-menu-item-accordion ms-auto"></i>
+            </a>
+            <ul class="sidebar-dropdown-menu">
+                <li class="sidebar-dropdown-menu-item">
+                    <a href="#">
+                        Stock Management
+                    </a>
+                </li>
+                <li class="sidebar-dropdown-menu-item">
+                    <a href="#">
+                        Product Variants
+                    </a>
+                </li>
+                <li class="sidebar-dropdown-menu-item">
+                    <a href="#">
+                        Brands
+                    </a>
+                </li>
+            </ul>
+        </li>
+
+        <li class="sidebar-menu-item has-dropdown">
+            <a href="#" title="Reports" class="sidebar-link">
+                <i class="ri-file-chart-line sidebar-menu-item-icon"></i>
+                Reports
+                <i class="ri-arrow-down-s-line sidebar-menu-item-accordion ms-auto"></i>
+            </a>
+            <ul class="sidebar-dropdown-menu">
+                <li class="sidebar-dropdown-menu-item">
+                    <a href="#">
+                        Sales Reports
+                    </a>
+                </li>
+                <li class="sidebar-dropdown-menu-item">
+                    <a href="#">
+                        Product Reports
+                    </a>
+                </li>
+                <li class="sidebar-dropdown-menu-item">
+                    <a href="#">
+                        Customer Reports
+                    </a>
+                </li>
+            </ul>
+        </li>
+
+        <li class="sidebar-menu-item">
+            <a href="#" title="Analytics" class="sidebar-link">
+                <i class="ri-line-chart-line sidebar-menu-item-icon"></i>
+                Analytics
+            </a>
+        </li>
+
+        <li class="sidebar-menu-item has-dropdown">
+            <a href="#" title="Settings" class="sidebar-link">
+                <i class="ri-settings-line sidebar-menu-item-icon"></i>
+                Settings
+                <i class="ri-arrow-down-s-line sidebar-menu-item-accordion ms-auto"></i>
+            </a>
+            <ul class="sidebar-dropdown-menu">
+                <li class="sidebar-dropdown-menu-item">
+                    <a href="#">
+                        General Settings
+                    </a>
+                </li>
+                <li class="sidebar-dropdown-menu-item">
+                    <a href="#">
+                        Payment Methods
+                    </a>
+                </li>
+                <li class="sidebar-dropdown-menu-item">
+                    <a href="#">
+                        Shipping Methods
+                    </a>
+                </li>
+                <li class="sidebar-dropdown-menu-item">
+                    <a href="#">
+                        Tax Settings
+                    </a>
+                </li>
+            </ul>
+        </li>
+
+        <li class="sidebar-menu-item has-dropdown">
+            <a href="#" title="Support" class="sidebar-link">
+                <i class="ri-customer-service-line sidebar-menu-item-icon"></i>
+                Support
+                <i class="ri-arrow-down-s-line sidebar-menu-item-accordion ms-auto"></i>
+            </a>
+            <ul class="sidebar-dropdown-menu">
+                <li class="sidebar-dropdown-menu-item">
+                    <a href="#">
+                        Help Center
+                    </a>
+                </li>
+                <li class="sidebar-dropdown-menu-item">
+                    <a href="#">
+                        Contact Support
+                    </a>
+                </li>
+            </ul>
+        </li>
+    </ul>
+</div>

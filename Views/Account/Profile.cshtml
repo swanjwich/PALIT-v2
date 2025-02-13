@@ -1,0 +1,161 @@
+﻿@model it15_palit.Entity.Customer
+
+@{
+    ViewData["Title"] = "My Profile";
+}
+<div class="container w-100">
+    @if (TempData["Message"] != null)
+    {
+        <div class="toast align-items-center bg-blue border-0 position-fixed top-0 end-0" style="margin-top: 7rem; z-index: 1050;" role="alert" aria-live="assertive" aria-atomic="true" id="toast">
+            <div class="d-flex">
+                <div class="toast-body text-white">
+                    @TempData["Message"]
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+    }
+    <div class="d-flex align-items-start">
+        <div class="nav flex-column nav-pills me-3" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+            <button class="nav-link bg-transparent active" id="v-pills-profile-tab" data-bs-toggle="pill" data-bs-target="#v-pills-profile" type="button" role="tab" aria-controls="v-pills-profile" aria-selected="false">Profile</button>
+            <button class="nav-link bg-transparent" id="v-pills-password-tab" data-bs-toggle="pill" data-bs-target="#v-pills-password" type="button" role="tab" aria-controls="v-pills-password" aria-selected="false">Change Password</button>
+            <button class="nav-link bg-transparent" id="v-pills-settings-tab" data-bs-toggle="pill" data-bs-target="#v-pills-settings" type="button" role="tab" aria-controls="v-pills-settings" aria-selected="false">Settings</button>
+        </div>
+        <div class="tab-content w-100" id="v-pills-tabContent">
+            <div class="tab-pane fade show active" id="v-pills-profile" role="tabpanel" aria-labelledby="v-pills-profile-tab" tabindex="0">
+                <div class="row">
+                    <div class="col-sm-12 col-md-6 col-lg-8">
+                        <div class="card mb-4">
+                            <div class="card-header">
+                               <h4>My Profile</h4>
+                               <p>Manage your account</p>
+                            </div>
+                            <div class="card-body">
+                                <form method="post" action="/Account/EditProfile">
+                                    <div class="row mb-3">
+                                        <input type="hidden" name="customerId" value="@Context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value" />
+                                        <div class="col">
+                                            <label for="username" class="form-label">Username</label>
+                                            <input type="text" id="username" name="Username" class="form-control" value="@Model.Username" readonly>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col">
+                                            <label for="fullName" class="form-label">Full Name</label>
+                                            <input type="text" id="fullName" name="Name" class="form-control" value="@Model.Name">
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col">
+                                            <label for="email" class="form-label d-flex align-items-center">
+                                                <span class="me-1">Email</span>
+                                                @if (Model.IsVerified) 
+                                                {
+                                                    <i class="ri-checkbox-circle-fill text-success" title="Email Verified"></i>
+                                                }
+                                                else
+                                                {
+                                                    <i class="ri-close-circle-line text-danger" title="Email Not Verified"></i>
+                                                }
+                                            </label>
+                                            <input type="email" id="email" name="Email" class="form-control" value="@Model.Email">
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col">
+                                            <label for="contact_num" class="form-label">Contact Number</label>
+                                            <input type="text" id="contact_num" name="Contact_Number" class="form-control" value="@Model.Contact_Number">
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col">
+                                            <label for="address" class="form-label">Address</label>
+                                            <input type="text" id="address" name="Address" class="form-control" value="@Model.Address">
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col">
+                                            <button type="submit" class="btn bg-blue text-white">Save</button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-12 col-md-6 col-lg-4">
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <h4>Display Picture</h4>
+                                <p>Change display picture</p>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3 text-center">
+                                    @if(Model.Display_Picture != null)
+                                    {
+                                        <img src="~/@Model.Display_Picture" alt="Profile Picture" class="img-thumbnail" style="width: 150px; height: 150px; object-fit: cover;">
+                                    }
+                                    else
+                                    {
+                                        <img src="~/images/profile-user.png" alt="Profile Picture" class="img-thumbnail" style="width: 150px; height: 150px; object-fit: cover;">
+                                    }
+                                </div>
+                                <form method="post" action="/Account/ChangeDisplayPicture" enctype="multipart/form-data">
+                                    <input type="hidden" name="customerId" value="@Context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value" />
+                                    <div class="row mb-3">
+                                        <div class="col">
+                                            <label for="displayPicture" class="form-label">Choose a new display picture</label>
+                                            <input type="file" id="displayPicture" name="DisplayPicture" class="form-control" accept="image/*">
+                                        </div>
+                                    </div>
+
+                                    <div class="row mb-3">
+                                        <div class="col">
+                                            <button type="submit" class="btn bg-blue text-white">Save</button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="tab-pane fade" id="v-pills-password" role="tabpanel" aria-labelledby="v-pills-password-tab" tabindex="0">
+                <div class="col-12">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h4>My Profile</h4>
+                            <p>Change your password</p>
+                        </div>
+                        <div class="card-body">
+                            <form method="post" action="/Account/ChangePassword">
+                                <div class="row mb-3">
+                                    <input type="hidden" name="customerId" value="@Context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value" />
+                                    <div class="col">
+                                        <label for="password" class="form-label">New Password</label>
+                                        <input type="password" id="password" name="Password" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col">
+                                        <label for="confirm" class="form-label">Confirm Password</label>
+                                        <input type="password" id="confirm" name="Confirm" class="form-control">
+                                    </div>
+                                </div>
+                                
+                                <div class="row mb-3">
+                                    <div class="col">
+                                        <button type="submit" class="btn bg-blue text-white">Save</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="v-pills-settings" role="tabpanel" aria-labelledby="v-pills-settings-tab" tabindex="0">...</div>
+        </div>
+
+       
+    </div>
+</div>

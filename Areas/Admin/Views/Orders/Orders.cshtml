@@ -1,0 +1,87 @@
+﻿@model X.PagedList.IPagedList<it15_palit.Entity.Order>
+@using X.PagedList.Mvc.Core;
+@{
+    ViewData["Title"] = "Orders";
+    ViewData["Header"] = "Orders";
+}
+@if (TempData["Message"] != null)
+{
+    <div class="toast align-items-center bg-blue border-0 position-fixed top-0 end-0" style="margin-top: 3rem;" role="alert" aria-live="assertive" aria-atomic="true" id="toast">
+        <div class="d-flex">
+            <div class="toast-body text-white">
+                @TempData["Message"]
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    </div>
+}
+<div class="content py-4">
+    <div class="card-body bg-white">
+        <div class="table-responsive mt-3 w-100">
+            <table class="table table-hover" id="ordersTable">
+
+                <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Customer Name</th>
+                        <th>Order Date</th>
+                        <th>Total Amount</th>
+                        <th>Status</th>
+                        <th>Order Details</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var order in Model)
+                    {
+                        <tr>
+                            <td>@order.Id</td>
+                            <td>@order.Customer.Name</td>
+                            <td>@order.OrderDate.ToString("yyyy-MM-dd")</td>
+                            <td>₱@order.Grand_Total.ToString("N2")</td>
+                            <td>
+                                <form asp-action="UpdateStatus" asp-controller="Orders" asp-area="Admin" method="post" style="display:inline;">
+                                    <select name="StatusId" onchange="this.form.submit()">
+                                        @foreach (var status in ViewBag.Statuses)
+                                        {
+                                            if (status.Id == order.Status_Id)
+                                            {
+                                                <option value="@status.Id" selected="selected">@status.Name</option>
+                                            }
+                                            else
+                                            {
+                                                <option value="@status.Id">@status.Name</option>
+                                            }
+                                        }
+                                    </select>
+                                    <input type="hidden" name="OrderId" value="@order.Id" />
+                                </form>
+                            </td>
+
+                                <td>
+                                <a href="@Url.Action("OrderDetails", new { orderId = order.Id })">View Details</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="pagination-wrapper mt-3 d-flex justify-content-center">
+        @Html.PagedListPager(Model, page => Url.Action("Orders", "Orders", new { page }), new PagedListRenderOptions
+   {
+       LiElementClasses = new[] { "page-item" },
+       PageClasses = new[] { "page-link" },
+       UlElementClasses = new[] { "pagination" }
+   })
+   </div>
+
+</div>
+
+<script>
+    document.querySelectorAll('select[name="StatusId"]').forEach(function (select) {
+        select.addEventListener('change', function () {
+            this.form.submit();
+        });
+    });
+</script>

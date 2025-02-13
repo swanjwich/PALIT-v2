@@ -1,0 +1,130 @@
+﻿<footer class="text-center text-lg-start text-white mt-5 bg-blue">
+    <div class="container p-4 pb-0">
+        <section class="">
+            <div class="row">
+                <div class="col-md-3 col-lg-3 col-xl-3 mx-auto mt-3">
+                    <h6 class="text-uppercase mb-4 font-weight-bold">
+                        PALIT
+                    </h6>
+                    <p>
+                        PALIT is your go-to local supermarket in Davao City. With a commitment to "TATAK LOCAL, BARATO, and PRESKO,"
+                        we provide fresh, affordable products sourced from local suppliers. Shop with us for a true community experience.
+                    </p>
+                </div>
+                <hr class="w-100 clearfix d-md-none" />
+
+                <div class="col-md-2 col-lg-2 col-xl-2 mx-auto mt-3">
+                    <h6 class="text-uppercase mb-4 font-weight-bold">ABOUT PALIT</h6>
+                    <p>
+                        <a id="about-us" class="text-white text-decoration-none @((ViewContext.RouteData.Values["action"].ToString() == "About" && ViewContext.RouteData.Values["controller"].ToString() == "Index") ? "active" : "")" asp-area="" asp-controller="Home" asp-action="About">About Us</a>
+                    </p>
+                    <p>
+                        <a href="#" class="text-white text-decoration-none">Privacy Policy</a>
+                    </p>
+                    <p>
+                        <a href="#" class="text-white text-decoration-none">Terms of Service</a>
+                    </p>
+                    <p>
+                        <a href ="#" class="text-white text-decoration-none">Return Policy</a>
+                    </p>
+                    <p>
+                        <a href="#" class="text-white text-decoration-none">FAQs</a>
+                    </p>
+                </div>
+
+                <hr class="w-100 clearfix d-md-none" />
+
+                <div class="col-md-3 col-lg-2 col-xl-2 mx-auto mt-3">
+                    <h6 class="text-uppercase mb-4 font-weight-bold">
+                        PAYMENT
+                    </h6>
+                    <div class="row">
+                        <div class="col-3 col-md-4 col-xl-6 mb-3 ">
+                            <a href="#">
+                                <div class="card bg-white border-0 p-2 h-100 d-flex justify-content-center">
+                                    <img src="~/images/payment/gcash.png" class="card-img" alt="GCash" />
+                                </div>
+                            </a>     
+                        </div>
+                        <div class="col-3 col-md-4 col-xl-6 mb-3 ">
+                            <a href="#">
+                                <div class="card bg-white border-0 p-2 h-100 d-flex justify-content-center">
+                                    <img src="~/images/payment/maya.jpg" class="card-img" alt="Maya" />
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-3 col-md-4 col-xl-6 mb-3">
+                            <a href="#">
+                                <div class="card bg-white border-0 h-100 d-flex justify-content-center">
+                                    <img src="~/images/payment/mastercard.png" class="card-img" alt="Mastercard" />
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-3 col-md-4 col-xl-6 mb-3">
+                            <a href="#">
+                                <div class="card bg-white border-0 h-100 d-flex justify-content-center">
+                                    <img src="~/images/payment/visa.jpg" class="card-img" alt="Visa" />
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-3 col-md-4 col-xl-6 mb-3">
+                            <a href="#">
+                                <div class="card bg-white border-0 h-100 p-1 d-flex justify-content-center">
+                                    <img src="~/images/payment/bpi.png" class="card-img" alt="BPI" />
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-3 col-md-4 col-xl-6 mb-3">
+                            <a href="#">
+                                <div class="card bg-white border-0 h-100 p-1 d-flex justify-content-center">
+                                    <img src="~/images/payment/coinsph.jpg" class="card-img" alt="Coins.ph" />
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="w-100 clearfix d-md-none" />
+
+                <div class="col-md-4 col-lg-3 col-xl-3 mx-auto mt-3">
+                    <h6 class="text-uppercase mb-4 font-weight-bold">Contact</h6>
+                    <p><i class="fas fa-home mr-3"></i> Matina, Davao City 8000, PH</p>
+                    <p><i class="fas fa-envelope mr-3"></i> palit.ph@gmail.com</p>
+                    <p><i class="fas fa-phone mr-3"></i> + 63 912 345 6789</p>
+                    <p><i class="fas fa-print mr-3"></i> + 63 992 424 3124</p>
+                </div>
+            </div>
+        </section>
+
+        <hr class="my-3">
+
+        <section class="p-3 pt-0">
+            <div class="row d-flex align-items-center">
+                <div class="col-md-7 col-lg-8 text-center text-md-start">
+                    <div class="p-3">
+                        © 2024
+                        <a class="text-white text-decoration-none">PALIT</a>
+                    </div>
+                </div>
+                <div class="col-md-5 col-lg-4 ml-lg-0 text-center text-md-end">
+                    <a class="btn btn-outline-light btn-floating m-1"
+                       role="button">
+                        <i class="ri-facebook-circle-fill"></i>
+                    </a>
+
+                    <a class="btn btn-outline-light btn-floating m-1"
+                       role="button">
+                        <i class="ri-mail-fill"></i>
+                    </a>
+
+                    <a class="btn btn-outline-light btn-floating m-1"
+                       role="button">
+                        <i class="ri-instagram-fill"></i>
+                    </a>
+                </div>
+            </div>
+        </section>
+    </div>
+</footer>

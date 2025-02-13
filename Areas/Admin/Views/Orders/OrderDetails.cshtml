@@ -1,0 +1,47 @@
+﻿@model X.PagedList.IPagedList<it15_palit.Entity.OrderDetail>
+@using X.PagedList.Mvc.Core;
+@{
+    ViewData["Title"] = "Order Details";
+    ViewData["Header"] = "Order Details";
+}
+<div class="content py-4">
+    <div class="card-body bg-white">
+        <div class="table-responsive mt-3 w-100">
+            <a asp-action="Orders" class="text-decoration-none d-flex align-items-center">
+                <i class="ri-arrow-left-line"></i>
+                <small class="ms-1">Go Back</small>
+            </a>
+            <table class="table table-hover" id="ordersTable">
+                <thead>
+                    <tr>
+                        <th>Order Detail ID</th>
+                        <th></th>
+                        <th>Product</th>
+                        <th>Quantity</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var detail in Model)
+                    {
+                        <tr>
+                            <td>@detail.Id</td>
+                            <td><img src="~/@detail.Product.Image_url" width="90" height="90" /></td>
+                            <td>@detail.Product.Name</td>
+                            <td>@detail.Quantity</td>                  
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="pagination-wrapper mt-3 d-flex justify-content-center">
+        @Html.PagedListPager(Model, page => Url.Action("OrderDetails", "Orders", new { page }), new PagedListRenderOptions
+   {
+       LiElementClasses = new[] { "page-item" },
+       PageClasses = new[] { "page-link" },
+       UlElementClasses = new[] { "pagination" }
+   })
+    </div>
+
+</div>

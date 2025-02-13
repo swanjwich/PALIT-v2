@@ -1,0 +1,87 @@
+﻿@{
+    ViewData["Title"] = "Home";
+}
+
+@model IEnumerable<it15_palit.Entity.Category>
+
+@if (TempData["Message"] != null)
+{
+    <div class="toast align-items-center bg-blue border-0 position-fixed top-0 end-0" style="margin-top: 7rem; z-index: 1050;" role="alert" aria-live="assertive" aria-atomic="true" id="toast">
+        <div class="d-flex">
+            <div class="toast-body text-white">
+                @TempData["Message"]
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    </div>
+}
+
+<div class="container-fluid">
+    <div id="carouselExampleIndicators" class="carousel slide w-100 rounded">
+        <div class="carousel-indicators">
+            <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+            <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1" aria-label="Slide 2"></button>
+            <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2" aria-label="Slide 3"></button>
+        </div>
+        <div class="carousel-inner">
+            <div class="carousel-item active">
+                <img src="~/images/carousel_1.png" class="d-block w-100" alt="...">
+            </div>
+            <div class="carousel-item">
+                <img src="~/images/carousel_2.jpg" class="d-block w-100" alt="...">
+            </div>
+            <div class="carousel-item">
+                <img src="~/images/carousel_1.png" class="d-block w-100" alt="...">
+            </div>
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+        </button>
+    </div>
+
+
+    <div class="row text-center mt-3">
+        <div class="col d-flex justify-content-center align-items-center">
+            <i class="ri-home-8-fill me-2fs-3 text-blue"></i>
+            <span>Tatak Lokal</span>
+        </div>
+        <div class="col d-flex justify-content-center align-items-center">
+            <i class="ri-price-tag-3-fill me-2 fs-3 text-blue"></i>
+            <span>Barato</span>
+        </div>
+        <div class="col d-flex justify-content-center align-items-center">
+            <i class="ri-leaf-fill me-2 fs-3 text-blue"></i>
+            <span>Presko</span>
+        </div>
+    </div>
+
+    <div class="container-fluid p-0 bg-white">
+        <div class="col mt-5 px-0">
+            <div class="row py-3 px-0 border w-100 mx-auto">
+                <h5 class="text-center w-100">CATEGORIES</h5>
+            </div>
+
+            @for (int i = 0; i < Model.Count(); i += 8)
+            {
+                var categoryGroup = Model.Skip(i).Take(8);
+                <div class="row text-center g-0 mx-0 w-100">
+                    @foreach (var category in categoryGroup)
+                    {
+                        <div class="col card border">
+                            <a href="@Url.Action("Shop", "Home", new { selectedCategoryIds = new[] { category.Id } })" class="text-decoration-none text-black">
+                                <input type="hidden" name="category_id" value="@category.Id" />
+                                <img src="~/@category.Image_url" class="card-img-top" alt="@category.Name">
+                                <small class="card-text">@category.Name</small>
+                            </a>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+</div>
