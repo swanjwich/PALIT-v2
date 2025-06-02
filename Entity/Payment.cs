@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace it15_palit.Entity
+namespace cce106_palit.Entity
 {
     public class Payment
     {

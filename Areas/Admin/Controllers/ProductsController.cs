@@ -1,11 +1,13 @@
-﻿using it15_palit.Data;
-using it15_palit.Entity;
+﻿using cce106_palit.Data;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using X.PagedList;
+using cce106_palit.Entity;
 
-namespace it15_palit.Areas.Admin.Controllers
+namespace cce106_palit.Areas.Admin.Controllers
 {
+    [Authorize]
     [Area("Admin")]
     public class ProductsController : Controller
     {
@@ -15,29 +17,59 @@ namespace it15_palit.Areas.Admin.Controllers
         {
             _context = context;
         }
-        public IActionResult Products(int? page)
+
+        [Route("admin/products")]
+        [HttpGet]
+        public IActionResult Products(int? page, string? searchTerm, int? categoryFilter)
         {
             int pageSize = 10;
-            int pageNumber = (page ?? 1);
+            int pageNumber = page ?? 1;
 
-            var products = _context.Products
-                                   .Include(p => p.Category)
-                                   .OrderBy(p => p.Id)
-                                   .ToPagedList(pageNumber, pageSize);
-            ViewBag.Categories = _context.Categories.ToList();
+            var query = _context.Products
+                        .Where(c => !c.Is_Deleted)
+                        .Include(p => p.Category)
+                        .AsQueryable();
+
+            if (!string.IsNullOrEmpty(searchTerm))
+            {
+                query = query.Where(c => c.Name.Contains(searchTerm));
+            }
+
+            if (categoryFilter.HasValue)
+            {
+                query = query.Where(p => p.Category_id == categoryFilter.Value);
+            }
+
+            var products = query.OrderBy(p => p.Id)
+                            .ToPagedList(pageNumber, pageSize);
+
+            ViewBag.Categories = _context.Categories.Where(c => !c.Is_Deleted).ToList();
+            ViewBag.Page = pageNumber;
+            ViewBag.SearchTerm = searchTerm;
+            ViewBag.SelectedCategoryId = categoryFilter;
+
             return View(products);
         }
 
 
         [HttpPost]
-        public async Task<IActionResult> Create(string Name, string Description, decimal Price, int Stock_quantity, int CategoryId, IFormFile image)
+        public async Task<IActionResult> Create(string Name, string Description, decimal Price, int CategoryId, IFormFile image)
         {
+            bool productExists = await _context.Products
+                .AnyAsync(p => p.Name.ToLower() == Name.ToLower());
+
+            if (productExists)
+            {
+                TempData["Message"] = "A product with this name already exists.";
+                TempData["MessageType"] = "error";
+                return RedirectToAction("Index");
+            }
+
             var product = new Product
             {
                 Name = Name,
                 Description = Description,
                 Price = Price,
-                Stock_quantity = Stock_quantity,
                 Category_id = CategoryId,
             };
 
@@ -68,12 +100,21 @@ namespace it15_palit.Areas.Admin.Controllers
             }
             _context.Products.Add(product);
             _context.SaveChanges();
-            TempData["message"] = "Product successfully added!";
-            return RedirectToAction("Products");
+
+            var totalBefore = await _context.Products
+               .Where(c => c.Id < product.Id)
+               .CountAsync();
+
+            int pageSize = 10;
+            int page = (totalBefore / pageSize) + 1;
+
+            TempData["Message"] = "Product successfully added!";
+            TempData["MessageType"] = "success";
+            return RedirectToAction("Products", new { page });
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(string Name, string Description, decimal Price, int CategoryId, IFormFile image, int Id)
+        public async Task<IActionResult> Edit(string Name, string Description, decimal Price, int CategoryId, IFormFile image, int Id, int page = 1)
         {
             var product = await _context.Products.FindAsync(Id);
             if (product == null)
@@ -81,10 +122,21 @@ namespace it15_palit.Areas.Admin.Controllers
                 return NotFound();
             }
 
+            bool duplicateExists = await _context.Products
+            .AnyAsync(p => p.Id != Id && p.Name.ToLower() == Name.ToLower());
+
+            if (duplicateExists)
+            {
+                TempData["Message"] = "Another product with this name already exists.";
+                TempData["MessageType"] = "error";
+                return RedirectToAction("Products");
+            }
+
             product.Name = Name;
             product.Description = Description;
             product.Price = Price;
             product.Category_id = CategoryId;
+            product.Updated_at = DateTime.Now;
 
             if (image != null && image.Length > 0)
             {
@@ -115,8 +167,9 @@ namespace it15_palit.Areas.Admin.Controllers
             _context.Products.Update(product);
             await _context.SaveChangesAsync();
 
-            TempData["message"] = "Product successfully updated!";
-            return RedirectToAction("Products");
+            TempData["Message"] = $"Product No. {product.Id} has been successfully updated!";
+            TempData["MessageType"] = "success";
+            return RedirectToAction("Products", new { page });
         }
 
         [HttpPost]
@@ -128,19 +181,20 @@ namespace it15_palit.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            if (!string.IsNullOrEmpty(product.Image_url))
-            {
-                string filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", product.Image_url);
-                if (System.IO.File.Exists(filePath))
-                {
-                    System.IO.File.Delete(filePath);
-                }
-            }
+            //if (!string.IsNullOrEmpty(product.Image_url))
+            //{
+            //    string filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", product.Image_url);
+            //    if (System.IO.File.Exists(filePath))
+            //    {
+            //        System.IO.File.Delete(filePath);
+            //    }
+            //}
 
-            _context.Products.Remove(product);
+            product.Is_Deleted = true;
             await _context.SaveChangesAsync();
 
-            TempData["message"] = "Product successfully deleted!";
+            TempData["Message"] = $"Product No. {product.Id} has been successfully deleted!";
+            TempData["MessageType"] = "success";
             return RedirectToAction("Products");
         }
 

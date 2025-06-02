@@ -1,0 +1,113 @@
+﻿@model X.PagedList.IPagedList<Order>
+@using X.PagedList.Mvc.Core
+@using cce106_palit.Entity
+@{
+    ViewData["Title"] = "Details";
+    var customer = ViewBag.Customer as cce106_palit.Entity.Customer;
+}
+
+<div class="py-4 mt-16 sm:mt-8 space-y-6">
+    <div class="p-6 bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden">
+
+        <!-- Breadcrumb -->
+        <nav class="text-sm text-gray-600" aria-label="breadcrumb">
+            <ol class="flex space-x-2">
+                <li>
+                    <a asp-action="Index" class="text-[var(--color-primary)] hover:underline font-medium">Customers</a>
+                </li>
+                <li>&gt;</li>
+                <li class="text-gray-500">@customer.Name's Details</li>
+            </ol>
+        </nav>
+
+        <!-- Personal Info -->
+        <div class="bg-white shadow-md rounded-lg p-6 space-y-4">
+            <div class="text-sm text-gray-500 font-semibold">Customer ID: @customer.Id</div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-gray-500 text-sm">Name</label>
+                    <p class="text-lg font-medium text-gray-800">@customer.Name</p>
+                </div>
+                <div>
+                    <label class="block text-gray-500 text-sm">Contact Number</label>
+                    <p class="text-lg font-medium text-gray-800">@customer.Contact_Number</p>
+                </div>
+                <div>
+                    <label class="block text-gray-500 text-sm">Address</label>
+                    <p class="text-lg font-medium text-gray-800">@customer.Address</p>
+                </div>
+                <div class="md:col-span-2">
+                    <label class="block text-gray-500 text-sm">Email</label>
+                    <p class="text-lg font-medium text-gray-800">@customer.Email</p>
+                </div>
+            </div>
+        </div>
+
+        @if (Model != null && Model.Any())
+        {
+            <div class="bg-white shadow-md rounded-lg p-6">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">Orders</h2>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full table-auto text-sm text-left text-gray-700">
+                        <thead>
+                            <tr class="bg-gray-100 text-gray-600 uppercase text-xs">
+                                <th class="px-4 py-2">Order ID</th>
+                                <th class="px-4 py-2">Order Date</th>
+                                <th class="px-4 py-2">Product</th>
+                                <th class="px-4 py-2">Quantity</th>
+                                <th class="px-4 py-2">Price</th>
+                                <th class="px-4 py-2">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var order in Model)
+                            {
+                                foreach (var item in order.OrderDetails)
+                                {
+                                    <tr class="border-b">
+                                        <td class="px-4 py-2">@order.Id</td>
+                                        <td class="px-4 py-2">@order.OrderDate.ToString("MMMM dd, yyyy")</td>
+                                        <td class="px-4 py-2">@item.Product?.Name</td>
+                                        <td class="px-4 py-2">@item.Quantity</td>
+                                        <td class="px-4 py-2">₱@item.Product.Price.ToString("N2")</td>
+                                        <td class="px-4 py-2">
+                                            <span class="px-2 py-1 rounded-full text-white text-xs
+                                                @(order.Status.Name == "Completed" ? "bg-green-500" :
+                                                order.Status.Name == "To Receive" ? "bg-blue-500" :
+                                                order.Status.Name == "To Ship" ? "bg-indigo-500" :
+                                                order.Status.Name == "Pending" ? "bg-yellow-500" :
+                                                "bg-gray-500")"
+                                            >
+                                                @order.Status.Name
+                                            </span>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                    <div class="py-4 flex justify-center sm:justify-center overflow-x-auto">
+                        @Html.PagedListPager(Model, page => Url.Action("Details", new { page }), new PagedListRenderOptions
+                           {
+                               LiElementClasses = new[] { "mx-1" },
+                               PageClasses = new[] {
+                                "block min-w-[36px] text-center px-3 py-1 rounded border border-gray-300 hover:bg-[var(--hover)] hover:text-white dark:border-gray-600 dark:hover:bg-gray-600"
+                                },
+                               UlElementClasses = new[] {
+                                "flex flex-wrap justify-center gap-2 sm:gap-1"
+                                },
+                               ActiveLiElementClass = "bg-[var(--color-primary)] hover:bg-[var(--hover)] text-white rounded cursor-pointer"
+                           })
+                    </div>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="bg-white shadow-md rounded-lg p-6 text-gray-600">
+                <p>No orders found for this customer.</p>
+            </div>
+        }
+    </div>
+
+</div>

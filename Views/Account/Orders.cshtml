@@ -1,371 +1,195 @@
-﻿@{
+﻿@using cce106_palit.Entity
+@{
     ViewData["Title"] = "My Orders";
 }
-@using it15_palit.Entity 
-@model IEnumerable<it15_palit.Entity.Order> 
+@model IEnumerable<Order>
 
-<div class="container">
-    <h3>Your Orders</h3>
-    <nav>
-        <div class="nav nav-tabs" id="nav-tab" role="tablist">
-            <button class="nav-link active" id="nav-all-tab" data-bs-toggle="tab" data-bs-target="#nav-all" type="button" role="tab" aria-controls="nav-all" aria-selected="true">All</button>
-            <button class="nav-link" id="nav-ship-tab" data-bs-toggle="tab" data-bs-target="#nav-ship" type="button" role="tab" aria-controls="nav-ship" aria-selected="false">To Ship</button>
-            <button class="nav-link" id="nav-receive-tab" data-bs-toggle="tab" data-bs-target="#nav-receive" type="button" role="tab" aria-controls="nav-receive" aria-selected="false">To Receive</button>
-            <button class="nav-link" id="nav-completed-tab" data-bs-toggle="tab" data-bs-target="#nav-completed" type="button" role="tab" aria-controls="nav-completed" aria-selected="false">Completed</button>
-            <button class="nav-link" id="nav-cancelled-tab" data-bs-toggle="tab" data-bs-target="#nav-cancelled" type="button" role="tab" aria-controls="nav-cancelled" aria-selected="false">Cancelled</button>
-        </div>
-    </nav>
-    <div class="tab-content" id="nav-tabContent">
-        <!-- All Orders Tab -->
-        <div class="tab-pane fade show active" id="nav-all" role="tabpanel" aria-labelledby="nav-all-tab" tabindex="0">
-            <div class="table-responsive mt-3 rounded">
-                @if (!Model.Any())
+<div class="mt-32 max-w-5xl mx-auto px-4 py-6 text-gray-800 dark:text-gray-100">
+    <h3 class="text-2xl font-semibold mb-4">Your Orders</h3>
+
+    <!-- Tabs -->
+    <div class="flex space-x-2 border-b border-gray-300 dark:border-gray-600 overflow-x-auto">
+        <button data-tab="all" class="tab-button py-2 px-4 border-blue-500 text-blue-600 dark:text-blue-400 font-medium">All</button>
+        <button data-tab="1" class="tab-button py-2 px-4 hover:text-blue-500">Pending</button>
+        <button data-tab="2" class="tab-button py-2 px-4 hover:text-blue-500">To Ship</button>
+        <button data-tab="3" class="tab-button py-2 px-4 hover:text-blue-500">To Receive</button>
+        <button data-tab="4" class="tab-button py-2 px-4 hover:text-blue-500">Completed</button>
+        <button data-tab="5" class="tab-button py-2 px-4 hover:text-blue-500">Cancelled</button>
+    </div>
+
+    <!-- Tab Content -->
+    <div class="mt-6 space-y-6">
+        @{
+            var tabs = new Dictionary<string, string>
+        {
+        {"all", "All"},
+        {"1", "Pending"},
+        {"2", "To Ship"},
+        {"3", "To Receive"},
+        {"4", "Completed"},
+        {"5", "Cancelled"},
+        };
+        }
+
+        @foreach (var tab in tabs)
+        {
+            var filteredOrders = tab.Key == "all" ? Model : Model.Where(o => o.Status_Id.ToString() == tab.Key);
+
+            <div data-content="@tab.Key" class="tab-content @(tab.Key != "all" ? "hidden" : "")">
+                @if (!filteredOrders.Any())
                 {
                     <div class="text-center">
-                        <i class="ri-shopping-cart-line text-blue" style="font-size: 10rem;"></i>
-                        <p class="mt-2">No orders yet.</p>
+                        <img src="~/images/empty-cart.png" alt="Empty" class="w-64 max-w-full mx-auto mb-6" />
+                        <p class="mt-2">No @tab.Value orders.</p>
                     </div>
                 }
                 else
                 {
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Order ID</th>
-                            <th></th>
-                            <th>Product Name</th>
-                            <th>Quantity</th>
-                            <th>Price</th>
-                            <th>Total</th>
-                            <th>Status</th>
-                            <th>Order Date</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var order in Model)
-                        {
-                            foreach (var detail in order.OrderDetails)
-                            {
-                                <tr>
-                                    <td>@order.Id</td>
-                                    <td><img src="~/@detail.Product.Image_url" width="90" height="90"/></td>
-                                    <td>@detail.Product.Name</td>
-                                    <td>@detail.Quantity</td>
-                                    <td>@detail.Product.Price.ToString("C")</td>
-                                    <td class="text-blue fw-bold">@((detail.Quantity * detail.Product.Price).ToString("C"))</td>
-                                    <td>
-                                        @switch (order.Status_Id)
-                                        {
-                                            case 1:
-                                                @:Pending
-                                                break;
-                                            case 2:
-                                                @:To Ship
-                                                break;
-                                            case 3:
-                                                @:To Receive
-                                                break;
-                                            case 4:
-                                                @:Completed
-                                                break;
-                                            case 5:
-                                                @:Cancelled
-                                                break;
-                                            default:
-                                                @:Unknown
-                                                break;
-                                        }
-                                    </td>
-                                    <td>@order.OrderDate.ToString("yyyy-MM-dd")</td>
-                                </tr>
-                            }
-                        }
-                    </tbody>
-                </table>
-                }
-            </div>
-        </div>
+                    @foreach (var order in filteredOrders)
+                    {
+                        <div class="rounded-lg shadow-sm bg-white dark:bg-gray-800 overflow-hidden mb-6">
+                            <div class="flex justify-between items-center p-4 dark:border-gray-700">
+                                <div class="text-sm text-gray-500 dark:text-gray-300">
+                                    Order ID: <span class="font-medium">@order.Id</span>
+                                </div>
+                                @{
+                                    string statusText = "";
+                                    string statusColor = "";
+                                    string tooltipText = $"Last updated on {order.Updated_At.ToString("MMM dd, yyyy hh:mm tt")}";
 
-        <!-- To Ship Tab -->
-        <div class="tab-pane fade" id="nav-ship" role="tabpanel" aria-labelledby="nav-ship-tab" tabindex="0">
-            <div class="table-responsive mt-3 rounded">
-                @if (!Model.Any(o => o.Status_Id == 2))
-                {
-                    <div class="text-center">
-                        <i class="ri-shopping-cart-line text-blue" style="font-size: 10rem;"></i>
-                        <p class="mt-2">No to ship orders yet.</p>
-                    </div>
-                }
-                else
-                {
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>Order ID</th>
-                                <th></th>
-                                <th>Product Name</th>
-                                <th>Quantity</th>
-                                <th>Price</th>
-                                <th>Total</th>
-                                <th>Status</th>
-                                <th>Order Date</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var order in Model.Where(o => o.Status_Id == 2))
-                            {
-                                foreach (var detail in order.OrderDetails)
-                                {
-                                    <tr>
-                                        <td>@order.Id</td>
-                                        <td><img src="~/@detail.Product.Image_url" width="90" height="90" /></td>
-                                        <td>@detail.Product.Name</td>
-                                        <td>@detail.Quantity</td>
-                                        <td>@detail.Product.Price.ToString("C")</td>
-                                        <td class="text-blue fw-bold">@((detail.Quantity * detail.Product.Price).ToString("C"))</td>
-                                        <td>
-                                            @switch (order.Status_Id)
-                                            {
-                                                case 1:
-                                                    @:Pending
-                                                    break;
-                                                case 2:
-                                                    @:To Ship
-                                                    break;
-                                                case 3:
-                                                    @:To Receive
-                                                    break;
-                                                case 4:
-                                                    @:Completed
-                                                    break;
-                                                case 5:
-                                                    @:Cancelled
-                                                    break;
-                                                default:
-                                                    @:Unknown
-                                                    break;
-                                            }
-                                        </td>
-                                        <td>@order.OrderDate.ToString("yyyy-MM-dd")</td>
-                                    </tr>
+                                    @switch (order.Status_Id)
+                                    {
+                                        case 1:
+                                            statusText = "Pending";
+                                            statusColor = "text-yellow-500";
+                                            break;
+                                        case 2:
+                                            statusText = "To Ship";
+                                            statusColor = "text-indigo-500";
+                                            break;
+                                        case 3:
+                                            statusText = "To Receive";
+                                            statusColor = "text-blue-500";
+                                            break;
+                                        case 4:
+                                            statusText = "Completed";
+                                            statusColor = "text-green-500";
+                                            break;
+                                        case 5:
+                                            statusText = "Cancelled";
+                                            statusColor = "text-red-500";
+                                            break;
+                                        default:
+                                            statusText = "Unknown";
+                                            statusColor = "text-gray-500";
+                                            break;
+                                    }
                                 }
-                            }
-                        </tbody>
-                    </table>
-                }
-            </div>
-        </div>
+                                <div class="cursor-pointer text-sm font-semibold @statusColor">
+                                    @if (statusText == "Cancelled")
+                                    {
+                                        <p class="text-sm flex items-center gap-1">
+                                            <span>
+                                                @statusText
+                                            </span>
+                                            <span class="text-blue-500 cursor-pointer" title="@tooltipText">
+                                                <i class="ri-question-line text-xs"></i>
+                                            </span>
+                                        </p>
+                                    }
+                                    else
+                                    {
+                                       
+                                        <p class="text-sm flex items-center gap-1">
+                                            <a asp-action="TrackOrder" asp-route-id="@order.Id">
+                                                @statusText
+                                            </a>
+                                            <span class="text-blue-500 cursor-pointer" title="@tooltipText">
+                                                <i class="ri-question-line text-xs"></i>
+                                            </span>
+                                        </p>
+                                    }
+                                   
+                                </div>
+                            </div>
 
-
-        <!-- To Receive Tab -->
-        <div class="tab-pane fade" id="nav-receive" role="tabpanel" aria-labelledby="nav-receive-tab" tabindex="0">
-            <div class="table-responsive mt-3 rounded">
-                @if (!Model.Any(o => o.Status_Id == 3))
-                {
-                    <div class="text-center">
-                        <i class="ri-shopping-cart-line text-blue" style="font-size: 10rem;"></i>
-                        <p class="mt-2">No to receive orders yet.</p>
-                    </div>
-                }
-                else
-                {            
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>Order ID</th>
-                                <th></th>
-                                <th>Product Name</th>
-                                <th>Quantity</th>
-                                <th>Price</th>
-                                <th>Total</th>
-                                <th>Status</th>
-                                <th>Order Date</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var order in Model.Where(o => o.Status_Id == 3))
-                            {
-                                foreach (var detail in order.OrderDetails)
+                            <div class="p-4 space-y-4">
+                                @foreach (var detail in order.OrderDetails)
                                 {
-                                    <tr>
-                                        <td>@order.Id</td>
-                                        <td><img src="~/@detail.Product.Image_url" width="90" height="90" /></td>
-                                        <td>@detail.Product.Name</td>
-                                        <td>@detail.Quantity</td>
-                                        <td>@detail.Product.Price.ToString("C")</td>
-                                        <td class="text-blue fw-bold">@((detail.Quantity * detail.Product.Price).ToString("C"))</td>
-                                        <td>
-                                            @switch (order.Status_Id)
-                                            {
-                                                case 1:
-                                                    @:Pending
-                                                    break;
-                                                case 2:
-                                                    @:To Ship
-                                                    break;
-                                                case 3:
-                                                    @:To Receive
-                                                    break;
-                                                case 4:
-                                                    @:Completed
-                                                    break;
-                                                case 5:
-                                                    @:Cancelled
-                                                    break;
-                                                default:
-                                                    @:Unknown
-                                                    break;
-                                            }
-                                        </td>
-                                        <td>@order.OrderDate.ToString("yyyy-MM-dd")</td>
-                                    </tr>
+                                    <div class="flex items-center space-x-4">
+                                        <img src="~/@detail.Product.Image_url" alt="@detail.Product.Name" class="w-20 h-20 object-cover rounded-md" />
+                                        <div class="flex-1">
+                                            <div class="text-lg font-bold">@detail.Product.Name</div>
+                                            <div class="text-xs text-gray-500 dark:text-gray-400">Qty: @detail.Quantity</div>
+                                        </div>
+                                        <div class="text-sm font-semibold text-right">
+                                            @((detail.Quantity * detail.Product.Price).ToString("C"))
+                                        </div>
+                                    </div>
                                 }
-                            }
-                        </tbody>
-                    </table>
+                                <div class="flex items-center justify-end">
+                                    <span class="text-gray-500 text-xs">Order Total: <span class="font-bold text-xl text-[var(--color-primary)]">₱@order.Grand_Total</span></span>
+                                </div>
+                            </div>
+
+                            <div class="flex justify-between items-center px-4 py-3 dark:border-gray-700 bg-gray-50 dark:bg-gray-900">
+                                <div class="text-xs text-gray-500 dark:text-gray-400">
+                                    Ordered on: @order.OrderDate.ToString("MMMM dd, yyyy hh:mm tt")
+                                </div>
+                                <div class="space-x-2">
+                                    @if (order.Status_Id == 4 || order.Status_Id == 5)
+                                    {                                            
+                                        <form asp-action="BuyAgain" asp-controller="Shop" method="post" class="inline-block">
+                                            <input type="hidden" name="customerId" value="@Context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value" />
+
+                                            @foreach (var detail in order.OrderDetails)
+                                            {
+                                                <input type="hidden" name="productIds[]" value="@detail.Product.Id" />
+                                                <input type="hidden" name="quantities[]" id="quantityInput" value="@detail.Quantity" />                                            
+                                            }
+                                            <button type="submit" class="cursor-pointer text-sm bg-[var(--color-primary)] text-white px-3 py-2 rounded hover:bg-blue-600 dark:hover:bg-gray-700">
+                                                Buy Again
+                                            </button>
+                                        </form>
+
+                                    }
+                                    @if (order.Status_Id == 3)
+                                    {
+                                        <form asp-action="Receive" asp-controller="Account" method="post" class="inline-block">
+                                            <input type="hidden" name="orderId" value="@order.Id" />
+                                            <button type="submit" class="cursor-pointer text-sm border border-green-500 text-green-600 px-3 py-1 rounded hover:bg-green-50 dark:hover:bg-gray-700">Order Received</button>
+                                        </form>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    }
                 }
             </div>
-        </div>
-
-        <!-- Completed Tab -->
-        <div class="tab-pane fade" id="nav-completed" role="tabpanel" aria-labelledby="nav-completed-tab" tabindex="0">
-            <div class="table-responsive mt-3 rounded">
-                 @if (!Model.Any(o => o.Status_Id == 4))
-                {
-                    <div class="text-center">
-                        <i class="ri-shopping-cart-line text-blue" style="font-size: 10rem;"></i>
-                        <p class="mt-2">No completed orders yet.</p>
-                    </div>
-                }
-                else
-                {
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Order ID</th>
-                            <th></th>
-                            <th>Product Name</th>
-                            <th>Quantity</th>
-                            <th>Price</th>
-                            <th>Total</th>
-                            <th>Status</th>
-                            <th>Order Date</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var order in Model.Where(o => o.Status_Id == 4))
-                        {
-                            foreach (var detail in order.OrderDetails)
-                            {
-                                <tr>
-                                    <td>@order.Id</td>
-                                    <td><img src="~/@detail.Product.Image_url" width="90" height="90" /></td>
-                                    <td>@detail.Product.Name</td>
-                                    <td>@detail.Quantity</td>
-                                    <td>@detail.Product.Price.ToString("C")</td>
-                                    <td class="text-blue fw-bold">@((detail.Quantity * detail.Product.Price).ToString("C"))</td>
-                                    <td>
-                                        @switch (order.Status_Id)
-                                        {
-                                            case 1:
-                                                @:Pending
-                                                break;
-                                            case 2:
-                                                @:To Ship
-                                                break;
-                                            case 3:
-                                                @:To Receive
-                                                break;
-                                            case 4:
-                                                @:Completed
-                                                break;
-                                            case 5:
-                                                @:Cancelled
-                                                break;
-                                            default:
-                                                @:Unknown
-                                                break;
-                                        }
-                                    </td>
-                                    <td>@order.OrderDate.ToString("yyyy-MM-dd")</td>
-                                </tr>
-                            }
-                        }
-                    </tbody>
-                </table>
-                }
-            </div>
-        </div>
-
-        <!-- Cancelled Tab -->
-        <div class="tab-pane fade" id="nav-cancelled" role="tabpanel" aria-labelledby="nav-cancelled-tab" tabindex="0">
-            <div class="table-responsive mt-3 rounded">
-                 @if (!Model.Any(o => o.Status_Id == 5))
-                {
-                    <div class="text-center">
-                        <i class="ri-shopping-cart-line text-blue" style="font-size: 10rem;"></i>
-                        <p class="mt-2">No cancelled orders yet.</p>
-                    </div>
-                }
-                else
-                {
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Order ID</th>
-                            <th></th>
-                            <th>Product Name</th>
-                            <th>Quantity</th>
-                            <th>Price</th>
-                            <th>Total</th>
-                            <th>Status</th>
-                            <th>Order Date</th>
-                        </tr>
-                    </thead>  
-                    <tbody>
-                        @foreach (var order in Model.Where(o => o.Status_Id == 5))
-                        {
-                            foreach (var detail in order.OrderDetails)
-                            {
-                                <tr>
-                                    <td>@order.Id</td>
-                                    <td><img src="~/@detail.Product.Image_url" width="90" height="90" /></td>
-                                    <td>@detail.Product.Name</td>
-                                    <td>@detail.Quantity</td>
-                                    <td>@detail.Product.Price.ToString("C")</td>
-                                    <td class="text-blue fw-bold">@((detail.Quantity * detail.Product.Price).ToString("C"))</td>
-                                    <td>
-                                        @switch (order.Status_Id)
-                                        {
-                                            case 1:
-                                                @:Pending
-                                                break;
-                                            case 2:
-                                                @:To Ship
-                                                break;
-                                            case 3:
-                                                @:To Receive
-                                                break;
-                                            case 4:
-                                                @:Completed
-                                                break;
-                                            case 5:
-                                                @:Cancelled
-                                                break;
-                                            default:
-                                                @:Unknown
-                                                break;
-                                        }
-                                    </td>
-                                    <td>@order.OrderDate.ToString("yyyy-MM-dd")</td>
-                                </tr>
-                            }
-                        }
-                    </tbody>
-                </table>
-                }
-            </div>
-        </div>
-
+        }
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const buttons = document.querySelectorAll('.tab-button');
+        const contents = document.querySelectorAll('.tab-content');
+
+        buttons.forEach(button => {
+            button.addEventListener('click', () => {
+                const tab = button.getAttribute('data-tab');
+
+                buttons.forEach(btn => btn.classList.remove('text-blue-600', 'dark:text-blue-400', 'border-blue-500'));
+                button.classList.add('text-blue-600', 'dark:text-blue-400', 'border-blue-500');
+
+                contents.forEach(content => {
+                    if (content.getAttribute('data-content') === tab) {
+                        content.classList.remove('hidden');
+                    } else {
+                        content.classList.add('hidden');
+                    }
+                });
+            });
+        });
+    });
+</script>

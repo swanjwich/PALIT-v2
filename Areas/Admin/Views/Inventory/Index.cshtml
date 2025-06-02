@@ -1,0 +1,96 @@
+﻿@model X.PagedList.IPagedList<cce106_palit.Entity.StockIn>
+@using X.PagedList.Mvc.Core;
+@using cce106_palit.Entity
+@{
+    ViewData["Title"] = "Inventory";
+}
+
+<div class="py-4 mt-16 sm:mt-8 space-y-6">
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden">
+        <div class="px-4 py-3 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
+            <div class="text-2xl font-bold">
+                @ViewData["Title"]
+            </div>
+            <a asp-action="StockIn" class="cursor-pointer flex items-center bg-[var(--color-primary)] text-white text-sm px-4 py-2 rounded hover:bg-[var(--hover)] transition" title="Create new product">
+                <i class="ri-add-circle-line mr-2"></i>
+                <span class="hidden sm:block">Stock In</span>
+            </a>
+        </div>
+
+        <div class="grid gap-4 sm:table w-full text-sm text-left text-gray-800 dark:text-gray-100">
+            <div class="hidden sm:table-header-group bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300">
+                <div class="table-row">
+                    <div class="table-cell px-4 py-2 font-semibold">ID</div>
+                    <div class="table-cell px-4 py-2 font-semibold"></div>
+                    <div class="table-cell px-4 py-2 font-semibold">Product</div>
+                    <div class="table-cell px-4 py-2 font-semibold">Amount</div>
+                    <div class="table-cell px-4 py-2 font-semibold">Expiration Date</div>
+                    <div class="table-cell px-4 py-2 font-semibold">Batch No.</div>
+                    <div class="table-cell px-4 py-2 font-semibold">Details</div>
+                </div>
+            </div>
+
+            @foreach (var stock in Model)
+            {
+                <div class="grid sm:table-row border border-gray-200 dark:border-gray-700 rounded-lg sm:rounded-none sm:border-0">
+                    <div class="sm:table-cell px-4 py-2">
+                        <span class="sm:hidden font-semibold">ID:</span> @stock.Id
+                    </div>
+                    <div class="sm:table-cell px-4 py-2">
+                        <img src="~/@stock.Product.Image_url" alt="Product Image" class="w-20 h-20 object-cover rounded" />
+                    </div>
+                    <div class="sm:table-cell px-4 py-2">
+                        <span class="sm:hidden font-semibold">Product:</span> @stock.Product.Name
+                    </div> 
+                    <div class="sm:table-cell px-4 py-2">
+                        <span class="sm:hidden font-semibold">Amount:</span> @stock.Amount
+                    </div>
+                    <div class="sm:table-cell px-4 py-2">
+                        <span class="sm:hidden font-semibold">Expiration Date:</span> @stock.ExpirationDate.ToString("MMMM dd, yyyy")
+                    </div>
+                    <div class="sm:table-cell px-4 py-2">
+                        <span class="sm:hidden font-semibold">Batch No.:</span> @stock.BatchNumber
+                    </div>
+                    <div class="table-cell px-4 py-3">
+                        <button type="button" class="cursor-pointer text-blue-600 hover:underline" data-modal-target="viewStock-@stock.Id">View</button>
+                    </div>
+                </div>
+            }
+            
+        </div>
+        <div class="py-4 flex justify-center sm:justify-center overflow-x-auto">
+            @Html.PagedListPager(Model, page => Url.Action("Index", new { page }), new PagedListRenderOptions
+           {
+               LiElementClasses = new[] { "mx-1" },
+               PageClasses = new[] {
+                "block min-w-[36px] text-center px-3 py-1 rounded border border-gray-300 hover:bg-[var(--hover)] hover:text-white dark:border-gray-600 dark:hover:bg-gray-600"
+                },
+               UlElementClasses = new[] {
+                "flex flex-wrap justify-center gap-2 sm:gap-1"
+                },
+               ActiveLiElementClass = "bg-[var(--color-primary)] hover:bg-[var(--hover)] text-white rounded cursor-pointer"
+           })
+        </div>
+    </div>
+</div>
+@{
+    @await Html.PartialAsync("~/Areas/Admin/Views/Inventory/View.cshtml");
+}
+
+<script>
+    function toggleDropdown(dropdownId) {
+        const dropdown = document.getElementById(dropdownId);
+        dropdown.classList.toggle('hidden');
+    }
+
+    document.addEventListener('click', function(event) {
+        if (!event.target.matches('[onclick^="toggleDropdown"]')) {
+            const dropdowns = document.querySelectorAll('[id^="actions-dropdown-"]');
+            dropdowns.forEach(dropdown => {
+                if (!dropdown.classList.contains('hidden')) {
+                    dropdown.classList.add('hidden');
+                }
+            });
+        }
+    });
+</script>

@@ -1,10 +1,11 @@
-using it15_palit.Data;
-using it15_palit.Models;
+using cce106_palit.Data;
+using cce106_palit.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
 
-namespace it15_palit.Controllers
+namespace cce106_palit.Controllers
 {
     public class HomeController : Controller
     {
@@ -18,7 +19,7 @@ namespace it15_palit.Controllers
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            var categories = await _context.Categories.ToListAsync();
+            var categories = await _context.Categories.Where(c => !c.Is_Deleted).ToListAsync();
             return View(categories);
         }
 
@@ -32,8 +33,9 @@ namespace it15_palit.Controllers
         [HttpGet]
         public async Task<IActionResult> Shop(List<int> selectedCategoryIds = null, decimal? minPrice = null, decimal? maxPrice = null, string? sortOrder = null, string? searchQuery = null)
         {
-            var categories = await _context.Categories.ToListAsync();
-            var productsQuery = _context.Products.Include(p => p.Category).AsQueryable();
+            var categories = await _context.Categories.Where(c => !c.Is_Deleted).ToListAsync();
+
+            var productsQuery = _context.Products.Include(p => p.Category).Where(p => !p.Is_Deleted).AsQueryable();
 
             if (selectedCategoryIds != null && selectedCategoryIds.Any())
             {
@@ -81,17 +83,26 @@ namespace it15_palit.Controllers
             };
 
 
-
+            ViewBag.SearchQuery = searchQuery;
             return View(viewModel);
         }
 
 
-
+        public IActionResult Terms()
+        {
+            return View();
+        }
 
         public IActionResult About()
         {
             return View();
         }
+
+        public IActionResult Privacy()
+        {
+            return View();
+        }
+
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

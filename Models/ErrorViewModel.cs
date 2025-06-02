@@ -1,4 +1,4 @@
-namespace it15_palit.Models
+namespace cce106_palit.Models
 {
     public class ErrorViewModel
     {

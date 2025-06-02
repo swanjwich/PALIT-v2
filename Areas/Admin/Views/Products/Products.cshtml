@@ -1,143 +1,218 @@
-﻿@model X.PagedList.IPagedList<it15_palit.Entity.Product>
+﻿@model X.PagedList.IPagedList<Product>
 @using X.PagedList.Mvc.Core;
+@using cce106_palit.Entity
 
 @{
     ViewData["Title"] = "Products";
-    ViewData["Header"] = "Products";
-
 }
-@if (TempData["Message"] != null)
-{
-    <div class="toast align-items-center bg-blue border-0 position-fixed top-0 end-0" style="margin-top: 3rem;" role="alert" aria-live="assertive" aria-atomic="true" id="toast">
-        <div class="d-flex">
-            <div class="toast-body text-white">
-                @TempData["Message"]
-            </div>
-            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-        </div>
-    </div>
-}
-<div class="content py-4">
-    <div class="row g-3">
-        <div class="col-12">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-header bg-white">
-                    <div class="row g-0">
-                        <div class="col-12 col-md-12 col-xl-12 text-end align-items-center">
-                            <div class="d-flex justify-content-end h-100">
-                                <button class="btn bg-blue text-white border-0 rounded d-flex justify-content-center align-items-center"
-                                        title="Create new product" data-bs-toggle="modal" data-bs-target="#createProductModal">
-                                    <i class="ri-add-circle-line"></i>
-                                    <span class="ms-1 d-sm-block d-none">Create new product</span>
-                                </button>
+<div class="py-4 space-y-4 mt-16 sm:mt-8">
+    <div class="space-y-4">
+        <div class="bg-white dark:bg-gray-800 rounded shadow-sm">
+            <div class="px-4 py-3 border-b border-gray-200 dark:border-gray-700 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <div class="text-2xl font-bold min-w-max">
+                    @ViewData["Title"]
+                </div>
 
+                <div class="flex flex-col sm:flex-row items-end sm:items-center gap-3 w-full sm:w-auto ml-auto">
+                    <div class="relative w-full sm:w-64">
+                        <form method="get" action="@Url.Action("Products")" class="flex items-center">
+                            <div class="relative flex-grow">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400 dark:text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                    </svg>
+                                </div>
+                                <input type="text"
+                                name="searchTerm"
+                                id="productSearch"
+                                value="@ViewBag.SearchTerm"
+                                placeholder="Search product..."
+                                class="block w-full pl-10 pr-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-sm text-gray-800 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                                aria-label="Search product">
                             </div>
+                        </form>
+                    </div>
+                    <div class="relative w-full sm:w-48">
+                        <form method="get" action="@Url.Action("Products")">
+                            <input type="hidden" name="searchTerm" value="@ViewBag.SearchTerm">
+
+                            <select name="categoryFilter"
+                            onchange="this.form.submit()"
+                            class="block w-full pl-3 pr-10 py-2.5 border border-gray-300 rounded-lg bg-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                <option value="">All Categories</option>
+                                @foreach (var category in ViewBag.Categories)
+                                {
+                                    <option value="@category.Id"
+                                    selected="@(ViewBag.SelectedCategoryId == category.Id)">
+                                        @category.Name
+                                    </option>
+                                }
+                            </select>       
+                        </form>
+                    </div>
+                    @{
+                        var hasSearchTerm = !string.IsNullOrEmpty(ViewBag.SearchTerm as string);
+                        var hasCategoryFilter = ViewBag.SelectedCategoryId != null && !string.IsNullOrEmpty(ViewBag.SelectedCategoryId.ToString());
+                    }
+                    @if (hasSearchTerm || hasCategoryFilter)
+                    {
+                        <div class="relative">
+                            <a href="@Url.Action("Products")"
+                            class="flex items-center justify-center p-2.5 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors duration-200"
+                            title="Clear filters">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-600 dark:text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </a>
+                        </div>
+                    }
+                    <button data-modal-target="addProduct"
+                    class="cursor-pointer flex items-center bg-[var(--color-primary)] text-white text-sm px-4 py-2.5 rounded-lg hover:bg-[var(--hover)] transition whitespace-nowrap w-full sm:w-auto justify-center">
+                        <i class="ri-add-circle-line mr-2"></i>
+                        <span>Add new product</span>
+                    </button>
+                </div>
+            </div>
+            @if (Model.Any())
+            {
+                <div class="grid gap-4 sm:table w-full text-sm text-left text-gray-800 dark:text-gray-100">
+                    <div class="hidden sm:table-header-group bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300">
+                        <div class="table-row">
+                            <div class="table-cell px-4 py-2 font-semibold">ID</div>
+                            <div class="table-cell px-4 py-2 font-semibold"></div>
+                            <div class="table-cell px-4 py-2 font-semibold">Name</div>
+                            <div class="table-cell px-4 py-2 font-semibold">Description</div>
+                            <div class="table-cell px-4 py-2 font-semibold">Price</div>
+                            <div class="table-cell px-4 py-2 font-semibold">Stock</div>
+                            <div class="table-cell px-4 py-2 font-semibold">Category</div>
+                            <div class="table-cell px-4 py-2 font-semibold">Actions</div>
+                        </div>
+                    </div>
+
+                    @foreach (var product in Model)
+                    {
+                        <div class="grid sm:table-row border border-gray-200 dark:border-gray-700 rounded-lg sm:rounded-none sm:border-0">
+                            <div class="sm:table-cell px-4 py-2">
+                                <span class="sm:hidden font-semibold">ID:</span> @product.Id
+                            </div>
+                            <div class="sm:table-cell px-4 py-2">
+                                <img src="~/@product.Image_url" alt="Product Image" class="w-20 h-20 object-cover rounded" />
+                            </div>
+                            <div class="sm:table-cell px-4 py-2">
+                                <span class="sm:hidden font-semibold">Name:</span> @product.Name
+                            </div>
+                            <div class="sm:table-cell px-4 py-2">
+                                <span class="sm:hidden font-semibold">Description:</span> @product.Description
+                            </div>
+                            <div class="sm:table-cell px-4 py-2">
+                                <span class="sm:hidden font-semibold">Price:</span> @product.Price
+                            </div>
+                            <div class="sm:table-cell px-4 py-2">
+                                <span class="sm:hidden font-semibold">Stock:</span> @product.StockQuantity
+                            </div>
+                            <div class="sm:table-cell px-4 py-2">
+                                <span class="sm:hidden font-semibold">Category:</span>
+                                @(product.Category != null ? product.Category.Name : "No Category")
+                            </div>
+                            <div class="sm:table-cell px-4 py-2 text-right">
+                                <div class="relative inline-block text-left">
+                                    <button type="button"
+                                    onclick="toggleDropdown('actions-dropdown-@product.Id')"
+                                    class="cursor-pointer inline-flex items-center justify-center w-8 h-8 rounded-full text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none"
+                                        viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+                                        class="w-5 h-5">
+                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="M12 6.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5ZM12 12.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5ZM12 18.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5Z" />
+                                        </svg>
+                                    </button>
+
+                                    <div id="actions-dropdown-@product.Id"
+                                    class="hidden absolute right-0 mt-2 w-40 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md shadow-lg z-50 transition-all duration-200">
+                                        <button type="button"
+                                        class="cursor-pointer w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-blue-50 hover:text-blue-600 dark:hover:bg-gray-700"
+                                        data-modal-target="editProduct-@product.Id">
+                                            <i class="ri-edit-line mr-2"></i> Edit
+                                        </button>
+
+                                        <form id="delete-product-form-@product.Id" asp-action="Delete" asp-controller="Products" method="post" class="w-full">
+                                            <input type="hidden" name="id" value="@product.Id" />
+                                            <button type="button" id="delete-product-btn-@product.Id"
+                                            class="cursor-pointer w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-red-50 hover:text-red-600 dark:hover:bg-gray-700">
+                                                <i class="ri-delete-bin-line mr-2"></i> Delete
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+
+
+                <div class="py-4 flex justify-center sm:justify-center overflow-x-auto">
+                    @Html.PagedListPager(Model, page => Url.Action("Products", new { page, searchTerm = Context.Request.Query["searchTerm"], categoryFilter = Context.Request.Query["categoryFilter"] }), new PagedListRenderOptions
+               {
+                   LiElementClasses = new[] { "mx-1" },
+                   PageClasses = new[] {
+                    "block min-w-[36px] text-center px-3 py-1 rounded border border-gray-300 hover:bg-[var(--hover)] hover:text-white dark:border-gray-600 dark:hover:bg-gray-600"
+                    },
+                   UlElementClasses = new[] {
+                    "flex flex-wrap justify-center gap-2 sm:gap-1"
+                    },
+                   ActiveLiElementClass = "bg-[var(--color-primary)] hover:bg-[var(--hover)] text-white rounded cursor-pointer"
+               })
+                </div>
+            }
+            else
+            {
+                <div class="table w-full">
+                    <div class="table-row">
+                        <div class="table-cell py-10 text-center text-gray-500 dark:text-gray-400" colspan="6">
+                            No product(s) found.
                         </div>
                     </div>
                 </div>
-
-                <div class="card-body">
-                    <div class="table-responsive mt-3 w-100">
-                        <table class="table table-hover" id="productsTable">
-                            <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th></th>
-                                    <th>Name</th>
-                                    <th>Description</th>
-                                    <th>Price</th>
-                                    <th>Stock</th>
-                                    <th>Category</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var product in Model)
-                                {
-                                    <tr>
-                                        <td>@product.Id</td>
-                                        <td><img src="~/@product.Image_url" width="90" height="90" /></td>
-                                        <td>@product.Name</td>
-                                        <td>@product.Description</td>
-                                        <td>@product.Price</td>
-                                        <td>@product.Stock_quantity</td>
-                                        <td>@(product.Category != null ? product.Category.Name : "No Category")</td>
-                                        <td>
-                                            <div class="d-flex justify-content-between">
-                                                <button class="btn btn-sm btn-primary me-2 edit-product"
-                                                        data-bs-toggle="modal"
-                                                        data-bs-target="#editProductModal"
-                                                        data-id="@product.Id"
-                                                        data-name="@product.Name"
-                                                        data-description="@product.Description"
-                                                        data-price="@product.Price"
-                                                        data-stock="@product.Stock_quantity"
-                                                        data-category="@product.Category_id">
-                                                    <i class="ri-edit-line"></i>
-                                                </button>
-                                                <form method="post" action="@Url.Action("Delete", "Products")" style="display:inline;" onsubmit="return confirmDelete();">
-                                                    <input type="hidden" name="id" value="@product.Id" />
-                                                    <button type="submit" class="btn btn-sm btn-danger" title="Delete">
-                                                        <i class="ri-delete-bin-line"></i>
-                                                    </button>
-                                                </form>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <div class="pagination-wrapper mt-3 d-flex justify-content-center">
-                    @Html.PagedListPager(Model, page => Url.Action("Products", new { page }), new PagedListRenderOptions
-               {
-                   LiElementClasses = new[] { "page-item" },
-                   PageClasses = new[] { "page-link" },
-                   UlElementClasses = new[] { "pagination" }
-               })
-                </div>
-            </div>
+            }
         </div>
     </div>
 </div>
 @{
-    Html.RenderPartial("Create.cshtml");
-    Html.RenderPartial("Edit.cshtml");
+    @await Html.PartialAsync("~/Areas/Admin/Views/Products/Create.cshtml");
+    @await Html.PartialAsync("~/Areas/Admin/Views/Products/Edit.cshtml");
 }
 
 <script>
-    $(document).ready(function() {
-        $('.edit-product').on('click', function() {
-            var productId = $(this).data('id');
-            var productName = $(this).data('name');
-            var productDescription = $(this).data('description');
-            var productPrice = $(this).data('price');
-            var productStock = $(this).data('stock');
-            var productCategory = $(this).data('category');
-            var productImage = $(this).closest('tr').find('img').attr('src');
+    function toggleDropdown(dropdownId) {
+        const dropdown = document.getElementById(dropdownId);
+        dropdown.classList.toggle('hidden');
+    }
 
-
-            console.log("ID:", productId);
-            console.log("Name:", productName);
-            console.log("Description:", productDescription);
-            console.log("Price:", productPrice);
-            console.log("Stock:", productStock);
-            console.log("Category:", productCategory);
-
-            $('#editProductId').val(productId);
-            $('#editProductName').val(productName);
-            $('#editProductDescription').val(productDescription);
-            $('#editProductPrice').val(productPrice);
-            $('#editProductStock').val(productStock);
-            $('#editProductCategory').val(productCategory);
-            $('#currentImage').attr('src', productImage);
-
-        });
+    document.addEventListener('click', function(event) {
+        if (!event.target.matches('[onclick^="toggleDropdown"]')) {
+            const dropdowns = document.querySelectorAll('[id^="actions-dropdown-"]');
+            dropdowns.forEach(dropdown => {
+                if (!dropdown.classList.contains('hidden')) {
+                    dropdown.classList.add('hidden');
+                }
+            });
+        }
     });
 
-    function confirmDelete() {
-        return confirm("Are you sure you want to delete this product?");
-    }
+        document.querySelectorAll('[id^="delete-product-btn-"]').forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            const id = this.id.replace('delete-product-btn-', '');
+
+            openModal({
+                title: 'Delete Product',
+                message: 'This will permanently delete the product and all associated data. This action cannot be undone.',
+                confirmText: 'Yes, delete it',
+                onConfirm: () => {
+                    document.getElementById('delete-product-form-' + id).submit();
+                },
+                showCancel: true
+            });
+        });
+    });
 </script>

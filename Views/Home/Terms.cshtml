@@ -1,0 +1,147 @@
+﻿@{
+    ViewData["Title"] = "Terms of Service";
+}
+<div class="container mx-auto">
+    <div class="flex flex-col lg:flex-row">
+        <!-- Left Sidebar (Fixed on desktop, hidden on mobile) -->
+        <div class="hidden lg:block w-full lg:w-1/4 xl:w-1/5 dark:bg-gray-800 lg:fixed top-0 left-0 h-full m-0 px-6 lg:px-8 xl:px-12 py-5 border-r border-gray-200">
+            <div class="flex justify-start items-center">
+                <img src="~/images/logo.png" class="w-8">
+                <span class="text-[var(--color-primary)] font-bold">PALIT</span>
+            </div>
+
+            <h2 class="text-xl lg:text-2xl font-bold text-gray-900 dark:text-white mt-4">Terms of Service</h2>
+
+            <!-- Left Sidebar List -->
+            <ul class="list-none text-gray-700 dark:text-gray-300 mt-4 px-0 lg:px-2">
+                <li class="mb-3"><a href="#account-registration" class="text-black hover:text-blue-600">1. Account Registration</a></li>
+                <li class="mb-3"><a href="#product-information" class="text-black hover:text-blue-600">2. Product Information</a></li>
+                <li class="mb-3"><a href="#orders-payments" class="text-black hover:text-blue-600">3. Orders and Payments</a></li>
+                <li class="mb-3"><a href="#shipping-delivery" class="text-black hover:text-blue-600">4. Shipping and Delivery</a></li>
+                <li class="mb-3"><a href="#returns-refunds" class="text-black hover:text-blue-600">5. Returns and Refunds</a></li>
+                <li class="mb-3"><a href="#user-conduct" class="text-black hover:text-blue-600">6. User Conduct</a></li>
+                <li class="mb-3"><a href="#intellectual-property" class="text-black hover:text-blue-600">7. Intellectual Property</a></li>
+                <li class="mb-3"><a href="#changes-to-terms" class="text-black hover:text-blue-600">8. Changes to Terms</a></li>
+            </ul>
+        </div>
+
+        <!-- Mobile menu button -->
+        <div class="lg:hidden flex items-center justify-between p-4 bg-gray-100 dark:bg-gray-700">
+            <div class="flex items-center">
+                <img src="~/images/logo.png" class="w-8">
+                <span class="text-[var(--color-primary)] font-bold ml-2">PALIT</span>
+            </div>
+            <button id="menu-toggle" class="text-gray-700 dark:text-gray-300">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+            </button>
+        </div>
+
+        <!-- Mobile sidebar (hidden by default) -->
+        <div id="mobile-sidebar" class="hidden lg:hidden w-full bg-white dark:bg-gray-800 shadow-lg p-4">
+            <h2 class="text-xl font-bold text-gray-900 dark:text-white">Terms of Service</h2>
+            <ul class="list-none text-gray-700 dark:text-gray-300 mt-4">
+                <li class="mb-3"><a href="#account-registration" class="text-black hover:text-blue-600">1. Account Registration</a></li>
+                <li class="mb-3"><a href="#product-information" class="text-black hover:text-blue-600">2. Product Information</a></li>
+                <li class="mb-3"><a href="#orders-payments" class="text-black hover:text-blue-600">3. Orders and Payments</a></li>
+                <li class="mb-3"><a href="#shipping-delivery" class="text-black hover:text-blue-600">4. Shipping and Delivery</a></li>
+                <li class="mb-3"><a href="#returns-refunds" class="text-black hover:text-blue-600">5. Returns and Refunds</a></li>
+                <li class="mb-3"><a href="#user-conduct" class="text-black hover:text-blue-600">6. User Conduct</a></li>
+                <li class="mb-3"><a href="#intellectual-property" class="text-black hover:text-blue-600">7. Intellectual Property</a></li>
+                <li class="mb-3"><a href="#changes-to-terms" class="text-black hover:text-blue-600">8. Changes to Terms</a></li>
+            </ul>
+        </div>
+
+        <!-- Right Column (Scrollable) -->
+        <div class="w-full lg:w-3/4 xl:w-4/5 dark:bg-gray-800 px-4 sm:px-6 lg:px-8 xl:px-12 py-6 lg:py-12 lg:ml-[25%] xl:ml-[20%]">
+            <!-- Close Button -->
+            <a asp-action="Index" class="cursor-pointer absolute top-4 right-4 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-6 h-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </a>
+
+            <!-- Content -->
+            <h2 class="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">Terms of Service</h2>
+            <p class="text-gray-700 dark:text-gray-300 mt-2">Effective April 25, 2025</p>
+
+            <p class="text-gray-700 dark:text-gray-300 mt-4">
+                Welcome to PALIT! These Terms and Conditions govern your use of our e-commerce website and services. By accessing or using our platform, you agree to be bound by these terms.
+            </p>
+
+            <section id="account-registration" class="mt-6">
+                <h5 class="text-lg sm:text-xl font-bold text-gray-900 dark:text-white">1. Account Registration</h5>
+                <p class="text-gray-700 dark:text-gray-300 mt-2">
+                    To access certain features, you may be required to register an account. You agree to provide accurate, current, and complete information and to keep your login credentials confidential.
+                </p>
+            </section>
+
+            <section id="product-information" class="mt-6">
+                <h5 class="text-lg sm:text-xl font-bold text-gray-900 dark:text-white">2. Product Information</h5>
+                <p class="text-gray-700 dark:text-gray-300 mt-2">
+                    We strive to ensure that all product details, descriptions, and prices listed on the website are accurate. However, errors may occur. In the event of a pricing or stock error, we reserve the right to cancel any affected orders.
+                </p>
+            </section>
+
+            <section id="orders-payments" class="mt-6">
+                <h5 class="text-lg sm:text-xl font-bold text-gray-900 dark:text-white">3. Orders and Payments</h5>
+                <p class="text-gray-700 dark:text-gray-300 mt-2">
+                    All orders are subject to acceptance and availability. Once you place an order, you will receive a confirmation. Payments are securely processed through our integrated payment system. PALIT is not liable for any third-party processing issues.
+                </p>
+            </section>
+
+            <section id="shipping-delivery" class="mt-6">
+                <h5 class="text-lg sm:text-xl font-bold text-gray-900 dark:text-white">4. Shipping and Delivery</h5>
+                <p class="text-gray-700 dark:text-gray-300 mt-2">
+                    We offer delivery within Davao City and surrounding areas. Estimated delivery times are provided for your convenience but may vary. PALIT is not responsible for delays beyond our control.
+                </p>
+            </section>
+
+            <section id="returns-refunds" class="mt-6">
+                <h5 class="text-lg sm:text-xl font-bold text-gray-900 dark:text-white">5. Returns and Refunds</h5>
+                <p class="text-gray-700 dark:text-gray-300 mt-2">
+                    We accept returns within [7/14] days for eligible items. Products must be in original condition with proof of purchase. Refunds will be issued according to your payment method.
+                </p>
+            </section>
+
+            <section id="user-conduct" class="mt-6">
+                <h5 class="text-lg sm:text-xl font-bold text-gray-900 dark:text-white">6. User Conduct</h5>
+                <p class="text-gray-700 dark:text-gray-300 mt-2">
+                    You agree not to use the website for any unlawful or unauthorized purposes. Harassment, fraud, or misuse of our services may result in suspension or termination of your account.
+                </p>
+            </section>
+
+            <section id="intellectual-property" class="mt-6">
+                <h5 class="text-lg sm:text-xl font-bold text-gray-900 dark:text-white">7. Intellectual Property</h5>
+                <p class="text-gray-700 dark:text-gray-300 mt-2">
+                    All content on this site—including text, images, logos, and software—is the property of PALIT or its suppliers and is protected by copyright and trademark laws.
+                </p>
+            </section>
+
+            <section id="changes-to-terms" class="mt-6">
+                <h5 class="text-lg sm:text-xl font-bold text-gray-900 dark:text-white">8. Changes to Terms</h5>
+                <p class="text-gray-700 dark:text-gray-300 mt-2">
+                    We may update these Terms and Conditions at any time. You will be notified of significant changes, and continued use of the platform constitutes acceptance of the updated terms.
+                </p>
+            </section>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Toggle mobile menu
+        document.getElementById('menu-toggle').addEventListener('click', function() {
+            const sidebar = document.getElementById('mobile-sidebar');
+            sidebar.classList.toggle('hidden');
+        });
+
+        // Close mobile menu when clicking a link
+        document.querySelectorAll('#mobile-sidebar a').forEach(link => {
+            link.addEventListener('click', function() {
+                document.getElementById('mobile-sidebar').classList.add('hidden');
+            });
+        });
+    </script>
+}

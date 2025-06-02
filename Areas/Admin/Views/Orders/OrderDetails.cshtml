@@ -1,33 +1,40 @@
-﻿@model X.PagedList.IPagedList<it15_palit.Entity.OrderDetail>
-@using X.PagedList.Mvc.Core;
+﻿@model X.PagedList.IPagedList<OrderDetail>
+@using X.PagedList.Mvc.Core
+@using cce106_palit.Entity
 @{
     ViewData["Title"] = "Order Details";
-    ViewData["Header"] = "Order Details";
 }
-<div class="content py-4">
-    <div class="card-body bg-white">
-        <div class="table-responsive mt-3 w-100">
-            <a asp-action="Orders" class="text-decoration-none d-flex align-items-center">
-                <i class="ri-arrow-left-line"></i>
-                <small class="ms-1">Go Back</small>
-            </a>
-            <table class="table table-hover" id="ordersTable">
-                <thead>
+
+<div class="py-4 mt-16 sm:mt-8 space-y-6">
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6">
+        <!-- Back Button -->
+        <a asp-action="Orders" class="inline-flex items-center text-blue-600 hover:underline mb-4">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24"
+                 stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+            </svg>
+            <span class="ml-2 text-sm">Go Back</span>
+        </a>
+
+        <!-- Table -->
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm text-left text-gray-700 dark:text-gray-200">
+                <thead class="text-xs uppercase bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300">
                     <tr>
-                        <th>Order Detail ID</th>
-                        <th></th>
-                        <th>Product</th>
-                        <th>Quantity</th>
+                        <th class="px-4 py-3"></th>
+                        <th class="px-4 py-3 font-medium">Product</th>
+                        <th class="px-4 py-3 font-medium">Quantity</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
                     @foreach (var detail in Model)
                     {
-                        <tr>
-                            <td>@detail.Id</td>
-                            <td><img src="~/@detail.Product.Image_url" width="90" height="90" /></td>
-                            <td>@detail.Product.Name</td>
-                            <td>@detail.Quantity</td>                  
+                        <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
+                            <td class="px-4 py-3">
+                                <img src="~/@detail.Product.Image_url" class="w-20 h-20 object-cover rounded" alt="@detail.Product.Name" />
+                            </td>
+                            <td class="px-4 py-3">@detail.Product.Name</td>
+                            <td class="px-4 py-3">@detail.Quantity</td>
                         </tr>
                     }
                 </tbody>
@@ -35,13 +42,18 @@
         </div>
     </div>
 
-    <div class="pagination-wrapper mt-3 d-flex justify-content-center">
+    <div class="py-4 flex justify-center sm:justify-center overflow-x-auto">
         @Html.PagedListPager(Model, page => Url.Action("OrderDetails", "Orders", new { page }), new PagedListRenderOptions
-   {
-       LiElementClasses = new[] { "page-item" },
-       PageClasses = new[] { "page-link" },
-       UlElementClasses = new[] { "pagination" }
-   })
+       {
+           LiElementClasses = new[] { "mx-1" },
+           PageClasses = new[] {
+            "block min-w-[36px] text-center px-3 py-1 rounded border border-gray-300 hover:bg-[var(--hover)] hover:text-white dark:border-gray-600 dark:hover:bg-gray-600"
+            },
+           UlElementClasses = new[] {
+            "flex flex-wrap justify-center gap-2 sm:gap-1"
+            },
+           ActiveLiElementClass = "bg-[var(--color-primary)] hover:bg-[var(--hover)] text-white rounded cursor-pointer"
+       })
     </div>
 
 </div>

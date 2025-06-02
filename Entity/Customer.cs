@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 
-namespace it15_palit.Entity
+namespace cce106_palit.Entity
 {
     [Index(nameof(Email), IsUnique = true)]
     [Index(nameof(Username), IsUnique = true)]
@@ -10,40 +10,37 @@ namespace it15_palit.Entity
     {
         [Key]
         public int Id { get; set; }
+        public string? Display_Picture { get; set; }
 
-        [Required(ErrorMessage = "Username is required.")]
-        [MaxLength(50, ErrorMessage = "Maximum of 50 characters are allowed.")]
-        public required string Username { get; set; }
+        [StringLength(100)]
+        public string? Username { get; set; }
 
-        [Required(ErrorMessage = "Password is required.")]
         [DataType(DataType.Password)]
         public required string Password { get; set; }
 
-        [Required(ErrorMessage = "Name is required.")]
-        [MaxLength(100, ErrorMessage = "Maximum of 100 characters are allowed.")]
+        [StringLength(100)]
         public required string Name { get; set; }
 
-        [Required(ErrorMessage = "Address is required.")]
-        [MaxLength(100, ErrorMessage = "Maximum of 100 characters are allowed.")]
-        public required string Address { get; set; }
+        [StringLength(255)]
+        public string? Address { get; set; }
+        public string? Contact_Number { get; set; }
 
-        [Required(ErrorMessage = "Email address is required.")]
         [DataType(DataType.EmailAddress)]
-        [MaxLength(50, ErrorMessage = "Maximum of 50 characters are allowed.")]
+        [StringLength(255)]
         public required string Email { get; set; }
         public bool IsVerified { get; set; } = false;
-        public DateTime? Email_verified_at { get; set; }
+        public string? VerificationToken { get; set; }
+        public string? PasswordResetToken { get; set; }
+        public DateTime? ResetTokenExpiry { get; set; }
+        public bool Is_Deactivated { get; set; } = false;
+        public bool Is_Deleted { get; set; } = false;
 
-        [Required(ErrorMessage = "Contact number is required.")]
-        public required string Contact_Number { get; set; }
-        public string? Display_Picture { get; set; }
+        public DateTime Created_At { get; set; }
+        public DateTime Updated_At { get; set; }
 
-        public DateTime Created_at { get; set; }
-        public DateTime Updated_at { get; set; }
-
-        public ICollection<Cart> Carts { get; set; }
-        public ICollection<Order> Orders { get; set; }
-
+        public ICollection<Cart>? Carts { get; set; }
+        public ICollection<Order>? Orders { get; set; }
+        public ICollection<Notification>? Notifications { get; set; }
 
     }
 }

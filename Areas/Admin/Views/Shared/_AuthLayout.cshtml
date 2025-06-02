@@ -5,29 +5,29 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - PALIT</title>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/admin.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/it15_palit.styles.css" asp-append-version="true" />
-    <link href="https://unpkg.com/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link href="~/css/output.css" rel="stylesheet" asp-append-version="true">
+    <link rel="stylesheet" href="~/cce106_palit.styles.css" asp-append-version="true" />
     <link rel="icon" href="~/images/logo.png">
-</head>
-<body>
-    <header>
 
-    </header>
-    <main role="main" class="bg-light">
-        <div class="p-2">
-            @RenderBody()
-        </div>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Koulen&family=Poppins:wght@100;200;300;400;500;600;700;900&family=Signika+Negative:wght@300..700&display=swap" rel="stylesheet">
+
+    <!--Remix Icon-->
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.6.0/fonts/remixicon.css" rel="stylesheet" />
+</head>
+
+<body class="bg-gray-100 dark:bg-gradient-to-br dark:from-gray-900 dark:to-gray-800">
+
+    <main class="p-2">
+        @RenderBody()
+
+        @await Html.PartialAsync("~/Views/Shared/Partials/_ToastNotif.cshtml")
     </main>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
-    <script src="~/js/admin/sidebar.js" asp-append-version="true"></script>
-    <script src="~/js/admin/active-sidebar.js" asp-append-version="true"></script>
-    <script src="~/js/admin/dashboard.js" asp-append-version="true"></script>
-    <script src="myjs/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.8.0/chart.min.js" integrity="sha512-sW/w8s4RWTdFFSduOTGtk4isV1+190E/GghVffMA9XczdJ2MDzSzLEubKAs5h0wzgSJOQTRYyaz73L3d6RtJSg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

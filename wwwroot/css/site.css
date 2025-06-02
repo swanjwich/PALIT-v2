@@ -1,140 +1,35 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+@import "tailwindcss";
 
 :root {
-    --main-color: #4a85c6;
-    --light-color: #f8f9fa;
+    --color-primary: #4a85c6;
+    --hover: #3a76cc;
     --davy-gray: #555555;
 }
 
-.text-blue {
-    color: var(--main-color);
-}
+@custom-variant dark (&:where(.dark, .dark *)); /* Use .dark as the selector */
 
 
-.bg-blue {
-    background-color: var(--main-color);
-}
-
-.bg-light {
-    background-color: var(--light-color);
-}
-
-.br-blue {
-    border: 1px solid var(--main-color);
-}
-
-    .br-blue:hover {
-        background-color: var(--main-color);
-        color: white;
+@keyframes toast-in {
+    0% {
+        transform: translateX(100%) scale(0.9);
+        opacity: 0;
     }
 
-.align-center {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-}
+    60% {
+        transform: translateX(-10%) scale(1.02);
+        opacity: 1;
+    }
 
-.validation-summary ul {
-    list-style-type: none;
-    padding-left: 0;
-}
+    80% {
+        transform: translateX(0%) scale(1);
+    }
 
-html {
-    font-size: 14px;
-    scroll-behavior: smooth;
-}
-
-@media (min-width: 768px) {
-    html {
-        font-size: 16px;
+    100% {
+        transform: translateX(0%) scale(1);
     }
 }
 
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+.animate-toast-in {
+    animation: toast-in 0.6s cubic-bezier(0.25, 1.25, 0.5, 1) forwards;
 }
 
-html {
-    position: relative;
-    min-height: 100%;
-}
-
-body {
-    font-family: 'Poppins', sans-serif;
-    background-color: var(--light-color);
-}
-
-nav {
-}
-
-.nav-link {
-    position: relative;
-    color: var(--davy-gray) !important;
-    text-decoration: none;
-    position: relative;
-    padding-bottom: 5px;
-}
-
-    .nav-link::before {
-        content: '';
-        position: absolute;
-        left: 50%;
-        bottom: 0;
-        width: 0;
-        height: 2px;
-        background-color: var(--main-color);
-        transition: width 0.3s ease, left 0.3s ease;
-        transform: translateX(-50%);
-    }
-
-    .nav-link:hover::before {
-        width: 100%;
-        color: var(--main-color) !important;
-    }
-
-    .nav-link:hover {
-        color: var(--main-color) !important;
-        text-decoration: none;
-    }
-
-    .nav-link.active::before {
-        width: 100%;
-    }
-
-    .nav-link.active {
-        color: var(--main-color) !important;
-        text-decoration: none;
-    }
-
-.home-icon:hover {
-    color: var(--davy-gray);
-    transition: color 0.3s ease;
-}
-
-@media (max-width: 768px) {
-    .card-text {
-        font-size: .5rem;
-    }
-}
-
-.product-card {
-    display: block;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-    .product-card:hover {
-        transform: scale(1.05);
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    }
-
-input[type="number"]::-webkit-outer-spin-button,
-input[type="number"]::-webkit-inner-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-}
-
-.disabled {
-    pointer-events: none; 
-    color: gray; 
-    cursor: default;
-}

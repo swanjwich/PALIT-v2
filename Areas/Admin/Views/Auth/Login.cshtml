@@ -1,39 +1,31 @@
-﻿@model it15_palit.Entity.User
+﻿@using cce106_palit.Entity
+@model User
 @{
     ViewData["Title"] = "Log In";
 }
-<div class="container vh-100 d-flex justify-content-center align-items-center">
-    <div class="row rounded shadow-lg bg-white p-4">
-        <div class="text-center mb-3">
-           <img src="~/images/logo.png" alt="Logo" width="60" height="50" class="mb-3" />
-        </div>
+<div class="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900 px-4">
+    <div class="w-full max-w-sm bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
+        <div class="text-center mb-6">
+            <img src="~/images/logo.png" alt="Logo" class="mx-auto w-16 h-14 mb-4" />
+        </div>       
 
-
-        @if (TempData["Message"] != null)
-        {
-            <div class="toast align-items-center bg-blue border-0 position-fixed top-0 end-0" style="margin-top: 3rem;" role="alert" aria-live="assertive" aria-atomic="true" id="toast">
-                <div class="d-flex">
-                    <div class="toast-body text-white">
-                        @TempData["Message"]
-                    </div>
-                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-                </div>
-            </div>
-        }
-
-
-        <form asp-area="Admin" asp-controller="Auth" asp-action="Login" method="post">
+        <form asp-area="Admin" asp-controller="Auth" asp-action="Login" method="post" class="space-y-4">
             @Html.AntiForgeryToken()
-            <div class="mb-3">
-                <label for="username" class="form-label">Username</label>
-                <input type="text" name="Username" class="form-control" id="username">
+            <div>
+                <label for="username" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Username</label>
+                <input type="text" name="Username" id="username"
+                       class="mt-1 block w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
             </div>
-            <div class="mb-3">
-                <label for="password" class="form-label">Password</label>
-                <input type="password" name="Password" class="form-control" id="password">
+            <div>
+                <label for="password" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Password</label>
+                <input type="password" name="Password" id="password"
+                       class="mt-1 block w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
             </div>
 
-            <button type="submit" class="btn btn-primary d-flex justify-content-center">Log In</button>
+            <button type="submit"
+                    class="cursor-pointer w-full bg-[var(--color-primary)] hover:bg-blue-600 text-white font-semibold py-2 rounded-md transition duration-200 text-center">
+                Log In
+            </button>
         </form>
     </div>
 </div>

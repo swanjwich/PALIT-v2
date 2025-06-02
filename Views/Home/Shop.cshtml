@@ -1,151 +1,157 @@
-﻿@{
+﻿@using cce106_palit.Models
+@{
     ViewData["Title"] = "Shop";
 }
 @model ShopViewModel
 
-
-<div class="row">
-    <div class="col-12 col-md-6 col-xl-2">
-        <div class="row">
-            <div class="d-flex justify-content-start align-items-center px-3">
-                <i class="ri-filter-line me-2"></i>
-                <span class="fw-bold">SEARCH FILTER</span>
-           </div>
+<div class="mt-34 flex flex-col md:flex-row max-w-5xl mx-auto">
+    <!-- Filter Sidebar -->
+    <div class="w-full md:w-1/3 lg:w-1/6 p-4">
+        <div class="flex items-center space-x-2 dark:text-gray-300">
+            <i class="ri-filter-line"></i>
+            <span class="font-bold text-sm">SEARCH FILTER</span>
         </div>
-        <form method="get" asp-action="Shop" asp-controller="Home">
-        <div class="row mt-3">
-            <div class="container px-3">
-                <small class="fw-medium">By Category</small>
-                @foreach (var category in Model.Categories)
-            {
-                var isChecked = Model.SelectedCategoryIds != null && Model.SelectedCategoryIds.Contains(category.Id);
-                <div class="form-check mt-2">
-                    <input class="form-check-input" type="checkbox" name="selectedCategoryIds" value="@category.Id" id="@category.Name" @(isChecked ? "checked" : "")>
-                    <label class="form-check-label" for="@category.Name">
-                        <small>@category.Name</small>
-                    </label>
-                </div>
-            }
 
+        <form method="get" asp-action="Shop" asp-controller="Home" class="mt-4">
+            <!-- Categories Section -->
+            <div class="mb-6">
+                <p class="font-medium dark:text-gray-300">By Category</p>
+                <div class="mt-3 space-y-2 max-h-60 overflow-y-auto pr-1
+                    [&::-webkit-scrollbar]:w-2
+                    [&::-webkit-scrollbar-track]:bg-transparent
+                    [&::-webkit-scrollbar-thumb]:rounded-full
+                    [&::-webkit-scrollbar-thumb]:bg-gray-300
+                    [&::-webkit-scrollbar-thumb]:hover:bg-gray-400
+                    dark:[&::-webkit-scrollbar-thumb]:bg-gray-500
+                    dark:[&::-webkit-scrollbar-thumb]:hover:bg-gray-400"
+                >
+                    @foreach (var category in Model.Categories)
+                    {
+                        var isChecked = Model.SelectedCategoryIds != null && Model.SelectedCategoryIds.Contains(category.Id);
+                        <div class="flex items-center space-x-3 py-1.5 hover:bg-gray-100 dark:hover:bg-gray-700/50 px-2 rounded transition-colors">
+                            <input type="checkbox"
+                            name="selectedCategoryIds"
+                            value="@category.Id"
+                            id="@category.Name"
+                            @(isChecked ? "checked" : "")
+                            class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:checked:bg-blue-600 dark:checked:border-blue-600 dark:focus:ring-blue-600">
+                            <label for="@category.Name" class="text-sm dark:text-gray-400 flex-1">@category.Name</label>
+                        </div>
+                    }
+                </div>
             </div>
 
-            <hr class="mt-3">
+            <hr class="my-4 border-gray-300 dark:border-gray-600">
 
-            <div class="container px-3">
-                <small class="fw-medium">Price Range</small>
-                <div class="row mt-3">
-                    <div class="col">
-                        <input class="w-100 rounded" type="number" name="minPrice" min="0" placeholder="₱MIN">
-                    </div>
-                    -
-                    <div class="col">
-                        <input class="w-100 rounded" type="number" name="maxPrice" min="0" placeholder="₱MAX">
-                    </div>
-                </div>
-                <div class="row w-100 mt-3 mx-auto">
-                    <button type="submit" class="btn btn-sm bg-blue text-white">APPLY</button>
-                </div>
-                <div class="row w-100 mt-3 mx-auto">
-                    <a href="@Url.Action("Shop", "Home")" class="btn btn-sm bg-blue text-dark">CLEAR</a>
+            <!-- Price Range Section -->
+            <div class="mb-6">
+                <p class="font-medium dark:text-gray-300">Price Range</p>
+                <div class="flex space-x-3 mt-3">
+                    <input class="w-full rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 dark:text-gray-300 px-3 py-1.5 text-sm focus:ring-blue-500 focus:border-blue-500"
+                    type="number"
+                    name="minPrice"
+                    min="0"
+                    placeholder="₱MIN"
+                    value="@Model.MinPrice">
+                    <span class="flex items-center dark:text-gray-400">-</span>
+                    <input class="w-full rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 dark:text-gray-300 px-3 py-1.5 text-sm focus:ring-blue-500 focus:border-blue-500"
+                    type="number"
+                    name="maxPrice"
+                    min="0"
+                    placeholder="₱MAX"
+                    value="@Model.MaxPrice">
                 </div>
             </div>
-            
-        </div>
+
+            <!-- Action Buttons -->
+            <div class="space-y-3">
+                <button type="submit"
+                class="w-full bg-blue-600 hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-800 text-white py-2 rounded-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800">
+                    APPLY
+                </button>
+                <a href="@Url.Action("Shop", "Home")"
+                class="block w-full text-center bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-gray-300 py-2 rounded-md transition-colors duration-200">
+                    CLEAR
+                </a>
+            </div>
         </form>
     </div>
 
-    <div class="col-12 col-md-6 col-xl-10 border">
-        <!--SORT BY-->
-        <div class="row">
-            <div class="container px-3 py-2 rounded d-flex align-items-center" style="background-color:#ededed;">
-                <small class="me-5">Sort by</small>
-                <button type="button" class="btn btn-sm bg-white text-dark mx-2">Top Sales</button>
-                <div class="dropdown">
-                    <button class="btn btn-sm bg-white text-dark dropdown-toggle" type="button" id="priceDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                        Price
-                    </button>
-                    <ul class="dropdown-menu" style="width: 200px;" aria-labelledby="priceDropdown">
-                        <li>
-                            <a class="dropdown-item" href="@Url.Action("Shop", "Home", new { sortOrder = "asc", selectedCategoryIds = Model.SelectedCategoryIds })">Low to High</a>
-                        </li>
-                        <li>
-                            <a class="dropdown-item" href="@Url.Action("Shop", "Home", new { sortOrder = "desc", selectedCategoryIds = Model.SelectedCategoryIds })">High to Low</a>
-                        </li>
-                    </ul>
-                </div>
+    <!-- Products Section -->
+    <div class="w-full md:w-2/3 lg:w-5/6 p-4">
+        <div class="bg-gray-200 dark:bg-gray-800 p-3 rounded flex items-center space-x-4">
+            <span class="text-sm text-black dark:text-white">Sort by</span>
+            <button class="cursor-pointer bg-white dark:bg-gray-700 px-3 py-1 text-black dark:text-white rounded focus:ring-2 focus:ring-blue-300 focus:outline-none">Top Sales</button>
+
+            <div class="relative">
+                <button id="priceDropdownBtn"
+                class="cursor-pointer bg-white dark:bg-gray-700 px-3 py-1 text-black dark:text-white rounded focus:ring-2 focus:ring-blue-300 focus:outline-none">
+                    Price
+                    <i class="ri-arrow-drop-down-line"></i>
+                </button>
+
+                <ul id="priceDropdown" class="absolute left-0 mt-1 w-40 bg-white dark:bg-gray-700 rounded shadow-md hidden z-50">
+                    <li>
+                        <a class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 text-black dark:text-white"
+                        href="@Url.Action("Shop", "Home", new { sortOrder = "asc", selectedCategoryIds = Model.SelectedCategoryIds })">
+                            Low to High
+                        </a>
+                    </li>
+                    <li>
+                        <a class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 text-black dark:text-white"
+                        href="@Url.Action("Shop", "Home", new { sortOrder = "desc", selectedCategoryIds = Model.SelectedCategoryIds })">
+                            High to Low
+                        </a>
+                    </li>
+                </ul>
             </div>
-               
         </div>
 
-       <!-- LIST OF PRODUCTS -->
-        @for (int i = 0; i < Model.Products.Count(); i++)
-        {
-            if (i % 6 == 0)
+        <!-- Products Grid -->
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 mt-4">
+            @if (Model.Products.Any())
             {
-                @: <div class="row g-2 m-2 w-100"> <!-- Open a new row every 6 products -->
-            }
-
-            <div class="col-12 col-sm-6 col-md-4 col-lg-2 mb-3">
-
-                <!-- PASS ID FROM HERE-->
-                <a class="product-card text-decoration-none p-0" 
-                asp-area="" asp-controller="Shop" 
-                asp-action="ProductDetails" 
-                asp-route-id="@Model.Products.ElementAt(i).Id">
-
-                    <div class="card text-dark h-100">
-                        <img src="~/@Model.Products.ElementAt(i).Image_url" class="card-img-top" style="object-fit: cover; height: 8rem;" alt="Product Image">
-                        <div class="card-body px-2 py-0">
-                            <p class="card-title text-truncate">@Model.Products.ElementAt(i).Name</p>
-                            <div class="row">
-                                <div class="col-9">
-                                    <p>₱@Model.Products.ElementAt(i).Price</p>
-                                </div>
-                                <div class="col-3 text-end">
-                                    <i class="home-icon ri-shopping-cart-fill text-blue"></i>
+                @foreach (var product in Model.Products)
+                {
+                    <a class="block text-black dark:text-white no-underline" asp-controller="Shop" asp-action="ProductDetails" asp-route-id="@product.Id">
+                        <div class="bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-md transform transition-transform duration-200 hover:scale-105 hover:shadow-lg">
+                            <img src="~/@product.Image_url" class="w-full h-32 object-cover" alt="Product Image">
+                            <div class="p-2">
+                                <p class="truncate">@product.Name</p>
+                                <div class="flex justify-between items-center mt-2">
+                                    <p class="text-black dark:text-white font-bold">₱@product.Price</p>
+                                    <i class="ri-shopping-cart-fill text-blue-600"></i>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </a>
-            </div>
-
-            @if (i % 6 == 5 || i == Model.Products.Count() - 1)
-            {
-                @: </div> <!-- Close the row after 6 products or the last product -->
+                    </a>
+                }
             }
-        }
+            else
+            {
+                <div class="col-span-full text-center text-xl text-gray-500 dark:text-gray-300">
+                    Product does not exist.
+                </div>
+            }
+        </div>
     </div>
 
 </div>
-
 <script>
-    function allowOnlyNumbers(e) {
-        // Allow: backspace, delete, tab, escape, enter, and arrow keys
-        if ([46, 8, 9, 27, 13, 37, 38, 39, 40].indexOf(e.keyCode) !== -1 ||
-            // Allow: Ctrl+A, Ctrl+C, Ctrl+V, Command+A
-            (e.keyCode === 65 && (e.ctrlKey === true || e.metaKey === true)) ||
-            (e.keyCode === 67 && (e.ctrlKey === true || e.metaKey === true)) ||
-            (e.keyCode === 86 && (e.ctrlKey === true || e.metaKey === true))) {
-            return; 
-        }
+    document.addEventListener('DOMContentLoaded', function () {
+        const dropdownBtn = document.getElementById('priceDropdownBtn');
+        const dropdownMenu = document.getElementById('priceDropdown');
 
-        // only numbers
-        if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) &&
-            (e.keyCode < 96 || e.keyCode > 105)) {
-            e.preventDefault();
-        }
-    }
+        dropdownBtn.addEventListener('click', function (event) {
+            event.stopPropagation(); // Prevent click from bubbling up
+            dropdownMenu.classList.toggle('hidden'); // Toggle dropdown
+        });
 
-   document.addEventListener('DOMContentLoaded', function () {
-        const viewMoreButton = document.getElementById('viewMore');
-        const moreCategories = document.getElementById('moreCategories');
-
-        viewMoreButton.addEventListener('click', function () {
-            moreCategories.classList.toggle('d-none');
-            viewMoreButton.innerHTML = moreCategories.classList.contains('d-none') 
-                ? `<span>More</span><i class="ri-arrow-down-s-line"></i>`
-                : `<span>Less</span><i class="ri-arrow-up-s-line"></i>`;
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function (event) {
+            if (!dropdownBtn.contains(event.target) && !dropdownMenu.contains(event.target)) {
+                dropdownMenu.classList.add('hidden');
+            }
         });
     });
 </script>

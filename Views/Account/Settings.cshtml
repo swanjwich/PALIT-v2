@@ -1,0 +1,93 @@
+﻿@using cce106_palit.Entity
+@model Customer
+
+@{
+    ViewData["Title"] = "Settings";
+    var customerId = Context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+}
+<div class="mt-34 w-full max-w-5xl mx-auto">
+    <div class="flex flex-col lg:flex-row gap-6">
+        @await Html.PartialAsync("~/Views/Shared/Partials/_AccountSidebar.cshtml", customerId)
+
+        <div class="w-full lg:w-4/5">
+            <div id="settings-panel">
+                <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
+                    <h4 class="text-xl font-bold mb-1 dark:text-white">Settings</h4>
+                    <p class="text-sm text-gray-600 dark:text-gray-300 mb-4">Manage other preferences here.</p>
+
+                    <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow mt-4 border-t border-gray-200 dark:border-gray-700">
+                        <h5 class="text-lg font-semibold text-red-600 dark:text-red-500 mb-2">Danger Zone</h5>
+                        
+                        <!-- Deactivate Account Section -->
+                        <div class="mb-6 p-4 border border-orange-200 dark:border-orange-800 rounded-lg bg-orange-50 dark:bg-orange-900/20">
+                            <h6 class="font-medium text-orange-800 dark:text-orange-200 mb-2">Deactivate Account</h6>
+                            <p class="text-sm text-orange-700 dark:text-orange-300 mb-3">
+                                Temporarily disable your account. You can reactivate later by logging in.
+                            </p>
+                            <ul class="text-xs text-orange-600 dark:text-orange-400 mb-4 space-y-1">
+                                <li>• Your profile will be hidden from others</li>
+                                <li>• You won't receive notifications</li>
+                                <li>• All data will be preserved</li>
+                                <li>• Reactivate anytime by logging in</li>
+                            </ul>
+                            <form id="deactivate-account-form" asp-action="DeactivateAccount" asp-controller="Account" method="post">
+                                <input type="hidden" name="customerId" value="@customerId" />
+                                <button type="button" onclick="confirmDeactivation()" 
+                                        class="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded text-sm transition">
+                                    Deactivate Account
+                                </button>
+                            </form>
+                        </div>
+
+                        <!-- Delete Account Section -->
+                        <div class="p-4 border border-red-200 dark:border-red-800 rounded-lg bg-red-50 dark:bg-red-900/20">
+                            <h6 class="font-medium text-red-800 dark:text-red-200 mb-2">Delete Account</h6>
+                            <p class="text-sm text-red-700 dark:text-red-300 mb-3">
+                                Permanently remove your account and all associated data.
+                            </p>
+                            <p class="text-xs text-red-600 dark:text-red-400 mb-4">
+                                By proceeding, you agree that:<br>
+                                • This action is irreversible<br>
+                                • All data will be permanently deleted<br>
+                            </p>
+                            <form id="delete-account-form" asp-action="DeleteAccount" asp-controller="Account" method="post">
+                                <input type="hidden" name="customerId" value="@customerId" />
+                                <button type="button" onclick="confirmDeletion()" 
+                                        class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded text-sm transition">
+                                    Delete Account Permanently
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function confirmDeactivation() {
+        openModal({
+            title: 'Deactivate Account',
+            message: 'Your account will be temporarily disabled. You can reactivate by logging in later.',
+            confirmText: 'Deactivate',
+            cancelText: 'Cancel',
+            onConfirm: () => {
+                document.getElementById('deactivate-account-form').submit();
+            }
+        });
+    }
+
+    function confirmDeletion() {
+        openModal({
+            title: 'Delete Account',
+            message: 'This will permanently delete your account and all associated data. This action cannot be undone.',
+            confirmText: 'Yes, delete it',
+            cancelText: 'Cancel',
+            confirmDanger: true,
+            onConfirm: () => {
+                document.getElementById('delete-account-form').submit();
+            }
+        });
+    }
+</script>

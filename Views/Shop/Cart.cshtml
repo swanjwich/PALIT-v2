@@ -1,89 +1,83 @@
-﻿@{
+﻿@using cce106_palit.Entity
+@{
     ViewData["Title"] = "My Shopping Cart";
 }
 
-@model List<it15_palit.Entity.Cart>
+@model List<Cart>
 
-<h1>@ViewData["Title"]</h1>
+<div class="mt-38 w-full max-w-5xl mx-auto">
+    <h1 class="text-2xl font-bold mb-4 dark:text-white">@ViewData["Title"]</h1>
 
-<div class="toast align-items-center bg-blue border-0 position-fixed top-0 end-0" style="margin-top: 7rem;" role="alert" aria-live="assertive" aria-atomic="true" id="toast">
-    <div class="d-flex">
-        <div class="toast-body text-white">
-        </div>
-        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-    </div>
-</div>
-
-@if (Model.Any())
-{
-    <div class="row bg-white p-2 mt-3 rounded">
-        <div class="col-4 text-start">Product Name</div>
-        <div class="col-2 text-end">Unit Price</div>
-        <div class="col-2 text-end">Quantity</div>
-        <div class="col-2 text-end">Total Price</div>
-        <div class="col-2 text-end">Actions</div>
-    </div>
-
-    @foreach (var item in Model)
+    @if (Model.Any())
     {
-        <div class="row py-2 mt-5 bg-white rounded" id="product-row-@item.Product_Id">
-            <!--Product Name-->
-            <div class="col-4 d-flex align-items-center text-start">
-                <input type="checkbox" class="form-check-input me-2 product-checkbox" @if (item.Is_Checked){ <text>checked</text>} data-product-id="@item.Product_Id" data-price="@item.Product.Price" />
-                <img src="~/@item.Product.Image_url" class="w-50" />
-                <span class="ms-2">@item.Product.Name</span>
+        <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow overflow-x-auto">
+            <div class="grid grid-cols-[3fr_1fr_1fr_1fr_1fr] font-semibold text-xs sm:text-sm">
+                <div class="text-gray-600 dark:text-white">Product</div>
+                <div class="text-center text-gray-600 dark:text-white">Unit Price</div>
+                <div class="text-center text-gray-600 dark:text-white">Quantity</div>
+                <div class="text-center text-gray-600 dark:text-white">Total Price</div>
+                <div class="text-end text-gray-600 dark:text-white">Actions</div>
             </div>
+        </div>
 
-            <!--Product Unit Price-->
-            <div class="col-2 d-flex align-center">₱@item.Product.Price</div>
+        <div class="w-full max-w-5xl bg-white dark:bg-gray-800 mx-auto p-4 rounded-lg shadow mt-3 overflow-x-auto">
+            @foreach (var item in Model)
+            {
+                <div class="grid grid-cols-[3fr_1fr_1fr_1fr_1fr] items-center py-4 border-b border-gray-200 dark:border-gray-700 min-w-[600px]" id="product-row-@item.Product_Id">
+                    <div class="flex items-center">
+                        <input type="checkbox" class="mr-2 product-checkbox" @if (item.Is_Checked)
+                        {
+                            <text>checked</text>
+                        } data-product-id="@item.Product_Id" data-price="@item.Product.Price" />
+                        <img src="~/@item.Product.Image_url" class="w-16 h-16 object-cover rounded" />
+                        <span class="ml-2 dark:text-white">@item.Product.Name</span>
+                    </div>
 
-            <!--Quantity-->
-            <div class="col-2 p-0 align-center">
-                <div class="input-group align-center">
-                    <button type="button" class="btn border input-group-text decrease-btn" data-product-id="@item.Product_Id">-</button>
-                    <input id="quantityInput-@item.Product_Id" class="form-control text-center" style="max-width: 60px;" type="number" value="@item.Quantity" min="1" readonly />
-                    <button type="button" class="btn border input-group-text increase-btn" data-product-id="@item.Product_Id">+</button>
+                    <div class="text-center dark:text-white">₱@item.Product.Price</div>
+
+                    <div class="flex justify-center items-center border border-gray-300 dark:border-gray-600 rounded-md text-sm w-24 mx-auto">
+                        <button type="button" class="px-2 py-1 border-r border-gray-300 dark:border-gray-600 dark:text-white decrease-btn" data-product-id="@item.Product_Id">-</button>
+                        <input id="quantityInput-@item.Product_Id" class="w-10 text-center mx-1 text-sm py-1 bg-white dark:bg-gray-800 text-black dark:text-white" type="number" value="@item.Quantity" min="1" />
+                        <button type="button" class="px-2 py-1 border-l border-gray-300 dark:border-gray-600 dark:text-white increase-btn" data-product-id="@item.Product_Id">+</button>
+                    </div>
+
+                    <div class="text-center font-semibold dark:text-white total-price">₱@(item.Product.Price * item.Quantity)</div>
+
+                    <div class="text-end">
+                        <form asp-action="Remove" method="post" class="inline" onsubmit="event.preventDefault(); deleteProduct(@item.Product_Id);">
+                            <button type="submit" class="text-red-500 hover:text-red-700 group cursor-pointer" title="Delete">
+                                <i class="ri-delete-bin-line text-lg group-hover:hidden"></i>
+                                <i class="ri-delete-bin-fill text-lg hidden group-hover:inline"></i>
+                            </button>
+                        </form>
+                    </div>
                 </div>
-            </div>
+            }
 
-            <!--Total Price (price*quantity) -->
-            <div class="col-2 align-center text-end total-price">₱@(item.Product.Price * item.Quantity)</div>
+            <div class="flex justify-between items-center bg-white dark:bg-gray-800 mt-5 py-3 px-2 dark:border-gray-700 overflow-x-auto min-w-[600px]">
+                <div class="flex items-center dark:text-white">
+                    <input type="checkbox" id="selectAll" class="mr-2">
+                    <label for="selectAll">Select All</label>
+                    <button id="deleteSelectedButton" class="ml-4 bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">Delete</button>
+                </div>
+                <div class="text-right dark:text-white">
+                    <span>Total (<span id="checked-item-count">@Model.Count(c => c.Is_Checked)</span> items): </span>
+                    <span id="total-amount" class="text-lg font-bold text-blue-500">₱@Model.Where(c => c.Is_Checked).Sum(item => item.Product.Price * item.Quantity)</span>
+                    <a class="ml-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" id="checkoutButton" asp-controller="Shop" asp-action="CheckOut">Check Out</a>
+                </div>
+            </div> 
 
-            <!--Delete button -->
-            <div class="col-2 align-center text-end">
-                <form asp-action="Remove" method="post" class="d-inline" onsubmit="event.preventDefault(); deleteProduct(@item.Product_Id);">
-                    <button type="submit" class="btn br-blue btn-sm ms-2 align-center">
-                        <i class="ri-delete-bin-line"></i>
-                        <span class="d-none d-sm-inline">Delete</span>
-                    </button>
-                </form>
-
-            </div>
         </div>
     }
-
-    <div class="row align-items-center bg-white mt-5 py-3">
-        <div class="col-6 d-flex align-items-center">
-            <input type="checkbox" id="selectAll" class="form-check-input me-2">
-            <label for="selectAll" class="me-3">Select All</label>
-            <button class="btn btn-light ms-2" id="deleteSelectedButton">Delete</button>
+    else
+    {
+        <div class="text-center">
+            <img src="~/images/empty-cart.png" alt="Empty" class="w-64 max-w-full mx-auto mb-6" />
+            <p class="mt-2 text-gray-600 dark:text-gray-300">Your cart is empty.</p>
+            <a class="text-[var(--color-primary)] hover:underline font-semibold" asp-controller="Home" asp-action="Shop">Start shopping now!</a>
         </div>
-        <div class="col-6 align-center">
-            <span>Total (<span id="checked-item-count">@Model.Count(c => c.Is_Checked)</span> items): 
-                <span id="total-amount" class="fs-3 text-blue">₱@Model.Where(c => c.Is_Checked).Sum(item => item.Product.Price * item.Quantity)</span>
-            </span>
-
-            <a class="btn bg-blue text-white ms-2" id="checkoutButton" asp-controller="Shop" asp-action="CheckOut">Check Out</a>
-        </div>
-    </div>
-}
-else
-{
-    <div class="text-center">
-        <i class="ri-shopping-cart-line text-blue" style="font-size: 10rem;"></i>
-        <p class="mt-2">Your cart is empty. Start shopping now!</p>
-    </div>
-}
+    }
+</div>
 
 <script>
     function calculateTotal() {
@@ -163,38 +157,31 @@ else
         });
     });
 
+    // update quantity action
     function updateQuantity(productId, newQuantity) {
         $.ajax({
             type: 'POST',
-            url: '@Url.Action("EditQuantity")', 
+            url: '@Url.Action("EditQuantity")',
             data: {
                 productId: productId,
                 newQuantity: newQuantity
             },
             success: function (response) {
-                // Update total price for this product row
                 let totalPriceElement = document.querySelector(`#product-row-${productId} .total-price`);
                 totalPriceElement.textContent = '₱' + response.newTotalPrice;
                 calculateTotal();
 
                 if (response.message) {
-                    var toastEl = document.getElementById('toast');
-                    var toastBody = toastEl.querySelector('.toast-body');
-                    toastBody.textContent = response.message; // Set the message
-                    var toast = new bootstrap.Toast(toastEl);
-                    toast.show();
-                } else {
-                    var toastEl = document.getElementById('toast');
-                    var toast = new bootstrap.Toast(toastEl);
-                    toast.hide();
+                    showToast(response.message, 'success');
                 }
             },
             error: function (xhr, status, error) {
-                alert("Error updating quantity: " + error);
+                showToast("Error updating quantity: " + error, 'error');
             }
         });
     }
 
+    // delete product action
     function deleteProduct(productId) {
         $.ajax({
             type: 'POST',
@@ -203,28 +190,22 @@ else
                 productId: productId
             },
             success: function (response) {
-                // Remove the product row from the UI
                 document.getElementById(`product-row-${productId}`).remove();
                 calculateTotal();
 
                 if (response.message) {
-                    var toastEl = document.getElementById('toast');
-                    var toastBody = toastEl.querySelector('.toast-body');
-                    toastBody.textContent = response.message; // Set the message
-                    var toast = new bootstrap.Toast(toastEl);
-                    toast.show();
+                    showToast(response.message, 'success');
                 } else {
-                    var toastEl = document.getElementById('toast');
-                    var toast = new bootstrap.Toast(toastEl);
-                    toast.hide();
+                    showToast("Product removed!", 'success');
                 }
             },
             error: function (xhr, status, error) {
-                alert("Error deleting product: " + error);
+                showToast("Error deleting product: " + error, 'error');
             }
         });
     }
 
+    // update check status action
     function updateCheckedStatus(productId, isChecked) {
         $.ajax({
             type: 'POST',
@@ -235,23 +216,30 @@ else
             },
             success: function (response) {
                 if (response.message) {
-                    console.log(response.message); 
+                    showToast(response.message, 'success');
                 }
             },
             error: function (xhr, status, error) {
-                alert("Error updating checked status: " + error);
+                showToast("Error updating checked status: " + error, 'error');
             }
         });
     }
 
-    document.querySelectorAll('.product-checkbox').forEach(function (checkbox) {
-        checkbox.addEventListener('change', function () {
-            let productId = this.getAttribute('data-product-id');
-            let isChecked = this.checked;
-            updateCheckedStatus(productId, isChecked);
+    document.querySelectorAll('input[id^="quantityInput-"]').forEach(function (input) {
+        input.addEventListener('input', function () {
+            let productId = this.id.replace('quantityInput-', '');
+            let newQuantity = parseInt(this.value);
+
+            // Basic validation
+            if (isNaN(newQuantity) || newQuantity < 1) {
+                this.value = 1;
+                newQuantity = 1;
+            }
+
+            updateQuantity(productId, newQuantity);
+            calculateTotal();
         });
     });
-
 
     document.getElementById('deleteSelectedButton').addEventListener('click', function () {
         let selectedIds = [];
@@ -261,10 +249,10 @@ else
         });
 
         if (selectedIds.length === 0) {
-            alert("No items selected for deletion.");
+            showToast("No item(s) selected for deletion.", 'error');
             return;
         }
-
+        // remove selected items
         if (confirm("Are you sure you want to delete the selected items?")) {
             $.ajax({
                 type: 'POST',
@@ -279,15 +267,11 @@ else
                     calculateTotal();
 
                     if (response.message) {
-                        var toastEl = document.getElementById('toast');
-                        var toastBody = toastEl.querySelector('.toast-body');
-                        toastBody.textContent = response.message; // Set the message
-                        var toast = new bootstrap.Toast(toastEl);
-                        toast.show();
+                        showToast(response.message, 'success');
+                        form.reset();
                     } else {
-                        var toastEl = document.getElementById('toast');
-                        var toast = new bootstrap.Toast(toastEl);
-                        toast.hide();
+                        showToast(response.message, 'error');
+
                     }
                 },
                 error: function (xhr, status, error) {

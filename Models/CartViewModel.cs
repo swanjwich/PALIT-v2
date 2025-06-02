@@ -1,7 +1,7 @@
-﻿using it15_palit.Entity;
+﻿using cce106_palit.Entity;
 using System.ComponentModel.DataAnnotations;
 
-namespace it15_palit.Models
+namespace cce106_palit.Models
 {
     public class CartViewModel
     {

@@ -1,4 +1,4 @@
-﻿using it15_palit.Entity;
+﻿using cce106_palit.Entity;
 using Newtonsoft.Json;
 using System.Net.Http.Headers;
 using System.Text;
@@ -34,6 +34,12 @@ public class PayMongoService
             name = item.Product.Name,
             quantity = item.Quantity
         }).ToList();
+
+        var totalAmount = lineItems.Sum(item => item.amount);
+        if (totalAmount < 2000)
+        {
+            return (null, null); 
+        }
 
         var payload = new
         {

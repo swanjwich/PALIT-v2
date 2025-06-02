@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using it15_palit.Entity;
+using cce106_palit.Entity;
 
-namespace it15_palit.Data
+namespace cce106_palit.Data
 {
     public class ApplicationDbContext : DbContext
     {
@@ -18,6 +18,9 @@ namespace it15_palit.Data
         public DbSet<Payment> Payments { get; set; }
         public DbSet<Status> Statuses { get; set; }
         public DbSet<User> Users { get; set; }
+
+        public DbSet<StockIn> StockIns { get; set; }
+        public DbSet<Notification> Notifications { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -57,7 +60,8 @@ namespace it15_palit.Data
             modelBuilder.Entity<Order>()
                 .HasOne(o => o.Customer)
                 .WithMany(c => c.Orders)
-                .HasForeignKey(o => o.Customer_Id);
+                .HasForeignKey(o => o.Customer_Id)
+                .OnDelete(DeleteBehavior.SetNull);
 
             // Order - Status relationship (1 Status to many Orders)
             modelBuilder.Entity<Order>()
@@ -83,6 +87,23 @@ namespace it15_palit.Data
                 .WithOne(p => p.Order)
                 .HasForeignKey(p => p.Order_Id);
 
+            modelBuilder.Entity<StockIn>()
+                .HasOne(si => si.Product)
+                .WithMany(p => p.StockIns)
+                .HasForeignKey(si => si.ProductId);
+
+            modelBuilder.Entity<Notification>()
+                .HasOne(n => n.User)
+                .WithMany(u => u.Notifications)
+                .HasForeignKey(n => n.UserId)
+                .OnDelete(DeleteBehavior.Cascade); 
+            
+            modelBuilder.Entity<Notification>()
+                .HasOne(n => n.Customer)
+                .WithMany(u => u.Notifications)
+                .HasForeignKey(n => n.CustomerId)
+                .OnDelete(DeleteBehavior.Cascade);
+
             SeedData(modelBuilder);
         }
 
@@ -92,22 +113,13 @@ namespace it15_palit.Data
                 new User
                 {
                     Id = 1,
-                    Username = "hadmin",
-                    Password = "password",
+                    Username = "admin",
+                    Password = "AQAAAAIAAYagAAAAELBZLJoNbTCB1DA7jr0aF56e9PBmGCg/5ORmvh6gnhTRnMGTGJm/dCoYt9iCWTFzbg==", // Admin123!
                     Name = "Hannah Tano",
-                    Email = "hadmin@email.com",
+                    Email = "hannahtano05@gmail.com",
+                    IsVerified = true,
                     Status = "Active",
-                    Created_At = DateTime.UtcNow,
-                    Updated_At = DateTime.UtcNow
-                },
-                new User
-                {
-                    Id = 2,
-                    Username = "odmin",
-                    Password = "password",
-                    Name = "Oscar Queman",
-                    Email = "odmin@email.com",
-                    Status = "Active",
+                    Role = "Super Admin",
                     Created_At = DateTime.UtcNow,
                     Updated_At = DateTime.UtcNow
                 }

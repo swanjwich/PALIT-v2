@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.11.35219.272
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cce106_palit", "cce106_palit.csproj", "{32D5EF7A-A779-42AC-A3D7-3F34CFDC011D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{32D5EF7A-A779-42AC-A3D7-3F34CFDC011D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{32D5EF7A-A779-42AC-A3D7-3F34CFDC011D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{32D5EF7A-A779-42AC-A3D7-3F34CFDC011D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{32D5EF7A-A779-42AC-A3D7-3F34CFDC011D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {05A483A6-77B6-46CA-BF3F-B8AFA3BAE9A7}
+	EndGlobalSection
+EndGlobal

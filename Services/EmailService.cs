@@ -1,39 +1,38 @@
-﻿using RestSharp;
-using RestSharp.Authenticators;
-using System;
-using System.Threading.Tasks;
+﻿using MailKit.Net.Smtp;
+using MimeKit;
 
-public class EmailService
+namespace cce106_palit.Services
 {
-    private readonly string _apiKey = "38ef7db582c93bcbcdd650266ef2d5d5-3724298e-dcdace87";
-    private readonly string _domain = "sandbox70ca21150c044e47bc12116b70b0fcab.mailgun.org";
-
-    public async Task<RestResponse> SendVerificationEmail(string email, string verificationLink)
+    public class EmailService
     {
-        var client = new RestClient(new RestClientOptions
+        private readonly IConfiguration _configuration;
+
+        public EmailService(IConfiguration configuration)
         {
-            BaseUrl = new Uri($"https://api.mailgun.net/v3/{_domain}/messages"),
-            Authenticator = new HttpBasicAuthenticator("api", _apiKey)
-
-        });
-
-        var request = new RestRequest
-        {
-            Method = Method.Post
-        };
-
-        request.AddParameter("from", $"PALIT Email Verification <mailgun@{_domain}>");
-        request.AddParameter("to", email);
-        request.AddParameter("subject", "Please verify your email address");
-        request.AddParameter("text", $"Thank you for registering! Please verify your email by clicking on the link: {verificationLink}");
-
-        var response = await client.ExecuteAsync(request);
-
-        if (!response.IsSuccessful)
-        {
-            throw new Exception($"Error sending email: {response.Content}");
+            _configuration = configuration;
         }
 
-        return response;
+        public async Task SendEmailAsync(string toEmail, string subject, string message)
+        {
+            var email = new MimeMessage();
+            email.From.Add(new MailboxAddress("PALIT", _configuration["SmtpSettings:Username"]));
+            email.To.Add(new MailboxAddress("", toEmail));
+            email.Subject = subject;
+
+            email.Body = new TextPart("html") { Text = message };
+
+            using var smtp = new SmtpClient();
+            await smtp.ConnectAsync(_configuration["SmtpSettings:Host"],
+                                    int.Parse(_configuration["SmtpSettings:Port"]),
+                                    MailKit.Security.SecureSocketOptions.StartTls);
+
+            await smtp.AuthenticateAsync(_configuration["SmtpSettings:Username"],
+                                         _configuration["SmtpSettings:Password"]);
+
+            await smtp.SendAsync(email);
+            await smtp.DisconnectAsync(true);
+
+
+        }
     }
 }

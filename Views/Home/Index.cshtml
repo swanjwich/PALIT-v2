@@ -1,87 +1,91 @@
-﻿@{
+﻿@using cce106_palit.Entity
+@{
     ViewData["Title"] = "Home";
 }
 
-@model IEnumerable<it15_palit.Entity.Category>
+@model IEnumerable<Category>
 
-@if (TempData["Message"] != null)
-{
-    <div class="toast align-items-center bg-blue border-0 position-fixed top-0 end-0" style="margin-top: 7rem; z-index: 1050;" role="alert" aria-live="assertive" aria-atomic="true" id="toast">
-        <div class="d-flex">
-            <div class="toast-body text-white">
-                @TempData["Message"]
-            </div>
-            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-        </div>
-    </div>
-}
+<div class="mt-34">
 
-<div class="container-fluid">
-    <div id="carouselExampleIndicators" class="carousel slide w-100 rounded">
-        <div class="carousel-indicators">
-            <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
-            <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1" aria-label="Slide 2"></button>
-            <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2" aria-label="Slide 3"></button>
-        </div>
-        <div class="carousel-inner">
-            <div class="carousel-item active">
-                <img src="~/images/carousel_1.png" class="d-block w-100" alt="...">
-            </div>
-            <div class="carousel-item">
-                <img src="~/images/carousel_2.jpg" class="d-block w-100" alt="...">
-            </div>
-            <div class="carousel-item">
-                <img src="~/images/carousel_1.png" class="d-block w-100" alt="...">
-            </div>
-        </div>
-        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
-            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-            <span class="visually-hidden">Previous</span>
-        </button>
-        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
-            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-            <span class="visually-hidden">Next</span>
-        </button>
-    </div>
-
-
-    <div class="row text-center mt-3">
-        <div class="col d-flex justify-content-center align-items-center">
-            <i class="ri-home-8-fill me-2fs-3 text-blue"></i>
-            <span>Tatak Lokal</span>
-        </div>
-        <div class="col d-flex justify-content-center align-items-center">
-            <i class="ri-price-tag-3-fill me-2 fs-3 text-blue"></i>
-            <span>Barato</span>
-        </div>
-        <div class="col d-flex justify-content-center align-items-center">
-            <i class="ri-leaf-fill me-2 fs-3 text-blue"></i>
-            <span>Presko</span>
+    <!-- Carousel -->
+    <div class="relative w-full max-w-5xl mx-auto overflow-hidden rounded-lg">
+        <div class="flex transition-transform duration-500 ease-in-out">
+            <img src="~/images/carousel_1.png" class="w-full" alt="Slide 1">
+            <img src="~/images/carousel_2.jpg" class="w-full" alt="Slide 2">
+            <img src="~/images/carousel_1.png" class="w-full" alt="Slide 3">
         </div>
     </div>
 
-    <div class="container-fluid p-0 bg-white">
-        <div class="col mt-5 px-0">
-            <div class="row py-3 px-0 border w-100 mx-auto">
-                <h5 class="text-center w-100">CATEGORIES</h5>
+    <!-- Features -->
+    <div class="max-w-5xl mx-auto grid grid-cols-3 text-center mt-6 gap-4">
+        <div class="flex flex-col items-center text-gray-700">
+            <i class="ri-home-8-fill text-3xl text-[var(--color-primary)]"></i>
+            <span class="dark:text-gray-300">Tatak Lokal</span>
+        </div>
+        <div class="flex flex-col items-center text-gray-700">
+            <i class="ri-price-tag-3-fill text-3xl text-[var(--color-primary)]"></i>
+            <span class="dark:text-gray-300">Barato</span>
+        </div>
+        <div class="flex flex-col items-center text-gray-700">
+            <i class="ri-wallet-3-fill text-3xl text-[var(--color-primary)]"></i>
+            <span class="dark:text-gray-300">Sulit</span>
+        </div>
+    </div>
+
+
+    <div class="bg-white dark:bg-gray-800 w-full p-0 max-w-5xl mx-auto rounded-md shadow dark:shadow-gray-900/30 transition-colors duration-200">
+        <div class="mt-5">
+            <div class="py-3 w-full mx-auto text-center border-b dark:border-gray-700">
+                <h5 class="text-lg font-semibold dark:text-gray-200">CATEGORIES</h5>
             </div>
 
-            @for (int i = 0; i < Model.Count(); i += 8)
-            {
-                var categoryGroup = Model.Skip(i).Take(8);
-                <div class="row text-center g-0 mx-0 w-100">
-                    @foreach (var category in categoryGroup)
-                    {
-                        <div class="col card border">
-                            <a href="@Url.Action("Shop", "Home", new { selectedCategoryIds = new[] { category.Id } })" class="text-decoration-none text-black">
-                                <input type="hidden" name="category_id" value="@category.Id" />
-                                <img src="~/@category.Image_url" class="card-img-top" alt="@category.Name">
-                                <small class="card-text">@category.Name</small>
-                            </a>
-                        </div>
-                    }
+            <div class="relative px-4 py-4">
+                <!-- Navigation Buttons -->
+                <button class="absolute left-2 top-1/2 -translate-y-1/2 z-10 bg-white dark:bg-gray-700 rounded-full p-2 shadow-md hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors duration-200" onclick="scrollCategories(-1)">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                    </svg>
+                </button>
+                <button class="absolute right-2 top-1/2 -translate-y-1/2 z-10 bg-white dark:bg-gray-700 rounded-full p-2 shadow-md hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors duration-200" onclick="scrollCategories(1)">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                    </svg>
+                </button>
+
+                <!-- Carousel Container -->
+                <div class="overflow-hidden">
+                    <div id="categoriesCarousel" class="flex gap-4 transition-transform duration-300 ease-in-out">
+                        @foreach (var category in Model)
+                        {
+                            <div class="flex-shrink-0 w-[calc(50%-0.5rem)] sm:w-[calc(33.333%-0.5rem)] md:w-[calc(25%-0.5rem)] lg:w-[calc(20%-0.5rem)]">
+                                <div class="shadow-md rounded-lg overflow-hidden hover:shadow-lg dark:hover:shadow-gray-900/50 transition-all duration-200 bg-gray-50 dark:bg-gray-700 group">
+                                    <a href="@Url.Action("Shop", "Home", new { selectedCategoryIds = new[] { category.Id } })" class="block text-black dark:text-gray-200 no-underline">
+                                        <div class="relative overflow-hidden aspect-square">
+                                            <img src="~/@category.Image_url" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" alt="@category.Name">
+                                            <div class="absolute inset-0 bg-black/5 group-hover:bg-black/10 dark:bg-black/20 dark:group-hover:bg-black/30 transition-colors duration-200"></div>
+                                        </div>
+                                        <small class="block p-2 text-sm font-medium dark:text-gray-300 truncate">@category.Name</small>
+                                    </a>
+                                </div>
+                            </div>
+                        }
+                    </div>
                 </div>
-            }
+            </div>
         </div>
     </div>
+
 </div>
+<script>
+    let currentSlide = 0;
+    const carousel = document.getElementById('categoriesCarousel');
+    const items = document.querySelectorAll('#categoriesCarousel > div');
+    const itemWidth = items[0]?.offsetWidth || 0;
+    const visibleItems = 4; // Number of items to show at once
+
+    function scrollCategories(direction) {
+        const maxSlides = Math.ceil(items.length / visibleItems) - 1;
+        currentSlide = Math.max(0, Math.min(currentSlide + direction, maxSlides));
+        carousel.style.transform = `translateX(-${currentSlide * itemWidth * visibleItems}px)`;
+    }
+</script>

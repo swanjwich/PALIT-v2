@@ -1,119 +1,164 @@
-﻿@{
+﻿@using cce106_palit.Models
+@{
     ViewData["Title"] = "Product Detail";
+
+    bool isOutOfStock = ViewBag.Stock == null || (int)ViewBag.Stock <= 0;
 }
-@model it15_palit.Models.CartViewModel;
+@model CartViewModel;
 
-@if (TempData["Message"] != null)
-{
-    <div class="toast align-items-center bg-blue border-0 position-fixed top-0 end-0" style="margin-top: 7rem;" role="alert" aria-live="assertive" aria-atomic="true" id="toast">
-        <div class="d-flex">
-            <div class="toast-body text-white">
-                @TempData["Message"]
-            </div>
-            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+<div class="mt-34 w-full max-w-5xl mx-auto bg-white dark:bg-gray-800 rounded-lg shadow p-6 mt-5">
+    <input type="text" id="productId" class="hidden" value="@ViewBag.ProductId" readonly />
+    <nav class="flex items-center text-sm mb-4" aria-label="Breadcrumb">
+        <ol class="flex items-center whitespace-nowrap">
+            <li class="inline-flex items-center">
+                <a asp-action="Index" asp-controller="Home"
+                class="flex items-center text-sm text-gray-500 hover:text-[var(--color-primary)] dark:text-neutral-500 dark:hover:text-[var(--color-primary)]">
+                    Home
+                </a>
+                <svg class="shrink-0 mx-2 size-4 text-gray-400 dark:text-neutral-600"
+                xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="m9 18 6-6-6-6"></path>
+                </svg>
+            </li>
+            <li class="inline-flex items-center">
+                <a asp-action="Shop" asp-controller="Home"
+                class="flex items-center text-sm text-gray-500 hover:text-[var(--color-primary)] dark:text-neutral-500 dark:hover:text-[var(--color-primary)]">
+                    Shop
+                </a>
+                <svg class="shrink-0 mx-2 size-4 text-gray-400 dark:text-neutral-600"
+                xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="m9 18 6-6-6-6"></path>
+                </svg>
+            </li>
+            <li class="inline-flex items-center text-sm font-semibold text-gray-800 truncate dark:text-neutral-200"
+            aria-current="page">
+                @ViewBag.ProductName
+            </li>
+        </ol>
+    </nav>
+
+
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+        <div class="flex justify-center items-center">
+            <img src="~/@ViewBag.ProductImage" class="w-3/4 rounded-lg" />
         </div>
-    </div>
-}
-<a asp-action="Shop" asp-controller="Home" class="text-decoration-none d-flex align-items-center">
-    <i class="ri-arrow-left-line"></i>
-    <small class="ms-1">Go Back</small>
-</a>
-<input type="hidden" id="productId" class="form-control" value="@ViewBag.ProductId" readonly />
-<div class="container-fluid bg-white rounded">
-    <div class="row">
-        <div class="col-6 d-flex justify-content-center align-items-center">
-            <img src="~/@ViewBag.ProductImage" class="img-fluid w-75" />
-        </div>
 
-        <div class="col-6 p-3">
-            <h2>@ViewBag.ProductName</h2>
-            <div class="container rounded p-3 bg-light">
-                <span class="fs-3 fw-bold">₱@ViewBag.ProductPrice</span>
-            </div>
-            <div class="row mt-3">
-                <div class="col-3 d-flex align-items-center">
-                    <small>Quantity</small>
-                </div>
-                <div class="col-9 d-flex align-items-center">
-                    <div class="input-group">
-                        <button class="btn border input-group-text" id="decrease">-</button>
-                        <input id="quantity" class="form-control text-center" style="max-width: 60px;" type="number" value="1" min="1" />
-                        <button class="btn border input-group-text" id="increase">+</button>
-                    </div>
-                </div>
+        <div class="p-4">
+            <h2 class="text-2xl font-bold text-gray-900 dark:text-white">@ViewBag.ProductName</h2>
+
+            <div class="bg-gray-100 dark:bg-gray-700 p-4 rounded-lg mt-2">
+                <span class="text-3xl font-bold text-[var(--color-primary)]">₱@ViewBag.ProductPrice</span>
             </div>
 
-            <div class="container mt-5 p-0 d-flex align-items-center">
-                @if (Context.User.Identity.Name != null)
+            <div class="mt-4 flex items-center text-gray-700 dark:text-gray-300 text-sm">
+                <span class="mr-2">Quantity</span>
+                <div class="flex items-center border border-gray-300 dark:border-gray-600 rounded-md
+                @(isOutOfStock ? "opacity-50 pointer-events-none" : "")">
+                    <button class="px-2 py-1 border-r border-gray-300 dark:border-gray-600 cursor-pointer" id="decrease">
+                        <i class="ri-subtract-line text-xs"></i>
+                    </button>
+                    <input id="quantity"
+                           class="w-12 text-center text-sm outline-none bg-white dark:bg-gray-800 text-black dark:text-white py-1"
+                           type="number" value="1" min="1" max="@ViewBag.Stock" @(isOutOfStock ? "disabled" : "") />
+                    <button class="px-2 py-1 border-l border-gray-300 dark:border-gray-600 cursor-pointer" id="increase">
+                        <i class="ri-add-line text-xs"></i>
+                    </button>
+                </div>
+                <span class="ml-3 text-xs @(isOutOfStock ? "text-red-500" : "text-gray-500 dark:text-gray-400")">
+                    @(isOutOfStock ? "Out of stock" : $"{ViewBag.Stock} pieces available")
+                </span>
+            </div>
+
+
+
+            <div class="mt-6 flex items-center gap-4">
+                @if (Context.User.Identity?.Name != null)
                 {
                     <form asp-action="AddToCart" asp-controller="Shop" method="post">
                         <input type="hidden" name="customerId" value="@Context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value" />
                         <input type="hidden" name="productId" value="@ViewBag.ProductId" />
                         <input type="hidden" name="quantity" id="quantityInput" value="1" />
-                        <button type="submit" class="btn br-blue me-3 p-3">+ Add to Cart</button>
+                        <button type="submit"
+                                class="cursor-pointer border border-[var(--color-primary)] text-[var(--color-primary)] px-6 py-3 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
+                                @(isOutOfStock ? "disabled" : "")>
+                            <i class="ri-add-line"></i> Add to Cart
+                        </button>
                     </form>
                 }
                 else
                 {
-                    <a asp-action="Login" asp-controller="Auth" class="btn br-blue me-3 p-3">+ Add to Cart</a>
+                    <a asp-action="Login" asp-controller="Auth" class="cursor-pointer border border-[var(--color-primary)] text-[var(--color-primary)] px-6 py-3 rounded-lg">
+                        <i class="ri-add-line"></i> Add to Cart
+                    </a>
                 }
+
                 @if (Context.User.Identity.Name != null)
                 {
                     <form asp-action="BuyNow" asp-controller="Shop" method="post">
                         <input type="hidden" name="customerId" value="@Context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value" />
                         <input type="hidden" name="productId" value="@ViewBag.ProductId" />
                         <input type="hidden" name="quantity" id="quantityInputBuy" value="1" />
-                        <button type="submit" class="btn bg-blue me-3 p-3">Buy Now</button>
+                        <button type="submit"
+                                class="cursor-pointer bg-[var(--color-primary)] text-white px-6 py-3 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
+                                @(isOutOfStock ? "disabled" : "")>
+                            Buy Now
+                        </button>
                     </form>
                 }
                 else
                 {
-                    <a asp-action="Login" asp-controller="Auth" class="btn bg-blue text-white p-3">Buy Now</a>
+                    <a asp-action="Login" asp-controller="Auth" class="cursor-pointer bg-[var(--color-primary)] text-white px-6 py-3 rounded-lg">Buy Now</a>
                 }
             </div>
 
-
-             <div class="container mt-5 p-2 rounded bg-light">
-                <span>About Product</span>      
-                <p>@ViewBag.ProductDescription</p>
+            <div class="bg-gray-100 dark:bg-gray-700 p-4 rounded-lg mt-6">
+                <span class="font-bold text-gray-800 dark:text-white">About Product</span>
+                <p class="text-gray-600 dark:text-gray-300 mt-3">@ViewBag.ProductDescription</p>
             </div>
         </div>
     </div>
 </div>
 
 <script>
-    document.getElementById('decrease').addEventListener('click', function() {
-        let input = document.getElementById('quantity');
-        let value = parseInt(input.value);
-        if (value > parseInt(input.min)) {
-            input.value = value - 1;
-            document.getElementById('quantityInput').value = input.value;
-            document.getElementById('quantityInputBuy').value = input.value;
+    const quantityInput = document.getElementById('quantity');
+    const quantityInputCart = document.getElementById('quantityInput');
+    const quantityInputBuy = document.getElementById('quantityInputBuy');
+    const maxStock = parseInt(quantityInput.max);
+
+    document.getElementById('decrease').addEventListener('click', function () {
+        let value = parseInt(quantityInput.value);
+        if (value > parseInt(quantityInput.min)) {
+            quantityInput.value = value - 1;
+            quantityInputCart.value = quantityInput.value;
+            quantityInputBuy.value = quantityInput.value;
         }
     });
 
-    document.getElementById('increase').addEventListener('click', function() {
-        let input = document.getElementById('quantity');
-        let value = parseInt(input.value);
-        input.value = value + 1;
-        document.getElementById('quantityInput').value = input.value;
-        document.getElementById('quantityInputBuy').value = input.value;
-
-    });
-
-    document.getElementById('quantity').addEventListener('input', function () {
-        let input = document.getElementById('quantity');
-        document.getElementById('quantityInput').value = input.value;
-    });
-
     document.getElementById('increase').addEventListener('click', function () {
-        var value = document.getElementById('quantity').value;
-        document.getElementById('quantityInput').value = value;
+        let value = parseInt(quantityInput.value);
+        if (value < maxStock) {
+            quantityInput.value = value + 1;
+            quantityInputCart.value = quantityInput.value;
+            quantityInputBuy.value = quantityInput.value;
+        }
     });
 
-    document.getElementById('decrease').addEventListener('click', function () {
-        var value = document.getElementById('quantity').value;
-        document.getElementById('quantityInput').value = value;
+    // Sync changes if user types manually
+    quantityInput.addEventListener('input', function () {
+        let value = parseInt(quantityInput.value);
+        if (value > maxStock) {
+            quantityInput.value = maxStock;
+        } else if (value < 1 || isNaN(value)) {
+            quantityInput.value = 1;
+        }
+        quantityInputCart.value = quantityInput.value;
+        quantityInputBuy.value = quantityInput.value;
     });
-
 </script>
+

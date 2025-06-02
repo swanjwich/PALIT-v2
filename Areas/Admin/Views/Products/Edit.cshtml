@@ -1,54 +1,75 @@
-﻿<div class="modal fade" id="editProductModal" tabindex="-1" aria-labelledby="editProductModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="editProductModalLabel">Edit Product</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+﻿@using cce106_palit.Entity
+
+@foreach (var product in Model)
+{
+    <div id="editProduct-@product.Id" class="fixed inset-0 z-50 flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300 bg-black/50">
+        <div class="modal-content relative bg-white dark:bg-gray-800 rounded-lg shadow-lg w-full max-w-lg max-h-[90vh] overflow-y-auto mx-auto p-6 scale-95 opacity-0 transition-all duration-300 transform">
+
+            <div class="mb-4 flex items-center justify-between border-b rounded-t dark:border-gray-600 border-gray-200 py-2">
+                <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
+                    Edit Product - @product.Name
+                </h3>
+                <button data-modal-close class="cursor-pointer text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-hide="default-modal">
+                    <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+                    </svg>
+                    <span class="sr-only">Close modal</span>
+                </button>
             </div>
-            <div class="modal-body">
-                <form method="post" action="@Url.Action("Edit", "Products")" enctype="multipart/form-data">
-                    <input type="hidden" id="editProductId" name="Id" />
-                    <div class="mb-3">
-                        <label for="editProductName" class="form-label">Product Name</label>
-                        <input type="text" class="form-control" id="editProductName" name="Name" required>
+
+
+            <form method="post" asp-controller="Products" asp-action="Edit" enctype="multipart/form-data" method="post">
+                <input type="hidden" name="Id" value="@product.Id" />
+                <input type="hidden" name="page" value="@ViewBag.Page" />
+                <div class="grid gap-4 mb-4 grid-cols-2">
+                    <div class="col-span-2">
+                        <label for="name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Name</label>
+                        <input type="text" name="Name" id="name" value="@product.Name" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="Type product name" required="">
                     </div>
-                    <div class="mb-3">
-                        <label for="editProductDescription" class="form-label">Description</label>
-                        <textarea class="form-control" id="editProductDescription" name="Description" required></textarea>
+                    <div class="col-span-2 sm:col-span-1">
+                        <label for="price" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Price</label>
+                        <input type="number" name="Price" id="price" value="@product.Price" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="₱0.00" required="">
                     </div>
-                    <div class="mb-3">
-                        <label for="editProductPrice" class="form-label">Price</label>
-                        <input type="number" class="form-control" id="editProductPrice" name="Price" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="editProductStock" class="form-label">Stock Quantity</label>
-                        <input type="number" class="form-control" id="editProductStock" name="Stock_quantity" readonly>
-                    </div>
-                    <div class="mb-3">
-                        <label for="editProductCategory" class="form-label">Category</label>
-                        <select class="form-select" id="editProductCategory" name="CategoryId" required>
-                            <option value="" disabled selected>Select a category</option>
-                            @foreach (var category in ViewBag.Categories as List<it15_palit.Entity.Category>)
+                    <div class="col-span-2 sm:col-span-1">
+                        <label for="category" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Category</label>
+                        <select id="category" name="CategoryId" required class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
+                            <option value="" disabled>Select a category</option>
+                            @foreach (var category in ViewBag.Categories as List<Category>)
                             {
-                                <option value="@category.Id">@category.Name</option>
+                                <option value="@category.Id" selected="@(category.Id == product.Category_id)">@category.Name</option>
                             }
                         </select>
                     </div>
-                    <label for="currentImage" class="form-label">Current Image</label>
-                    <div class="mb-3">
-                        <img id="currentImage" src="" alt="Current Product Image" width="90" height="90" />
+                    <div class="col-span-2">
+                        <label for="description" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Description</label>
+                        <textarea id="description" rows="4" name="Description"
+                            class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" 
+                            placeholder="Write product description here">@product.Description</textarea>
                     </div>
 
-                    <div class="mb-3">
-                        <label for="editProductImage" class="form-label">Product Image</label>
-                        <input type="file" class="form-control" id="editProductImage" name="Image" accept="image/*">
+                    <div class="col-span-2">
+                        <label for="productImage" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Display Image</label>
+                        <div class="mb-3">
+                            <img src="~/@product.Image_url" alt="Product Image" class="max-h-40 rounded-md border border-gray-300 dark:border-gray-600" />
+                        </div>
+                        <input accept="image/*" name="Image"
+                               type="file"
+                               class="cursor-pointer bg-gray-50 block w-full px-3 py-2 mt-2 text-sm text-gray-600 bg-white border border-gray-200 rounded-lg file:bg-gray-200 file:text-gray-700 file:text-sm file:px-4 file:py-1 file:border-none file:rounded-full dark:file:bg-gray-800 dark:file:text-gray-200 dark:text-gray-300 placeholder-gray-400/70 dark:placeholder-gray-500 focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40 dark:border-gray-600 dark:bg-gray-900 dark:focus:border-blue-300" />
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-primary">Save changes</button>
-                    </div>
-                </form>
-            </div>
+                </div>
+
+                <div class="flex justify-end space-x-2 mt-6">
+                    <button type="button" data-modal-close
+                            class="cursor-pointer bg-gray-200 text-gray-800 px-4 py-2 rounded hover:bg-gray-300 dark:bg-gray-600 dark:text-white">
+                        Cancel
+                    </button>
+                    <button type="submit"
+                            class="cursor-pointer bg-[var(--color-primary)] text-white px-4 py-2 rounded hover:bg-[var(--hover)]">
+                        Save Changes
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
-</div>
+
+}

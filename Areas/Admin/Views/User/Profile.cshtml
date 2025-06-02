@@ -1,0 +1,368 @@
+﻿@model cce106_palit.Entity.User
+
+@{
+    ViewData["Title"] = "Profile";
+}
+
+<div class="py-4 space-y-4 mt-16 sm:mt-8">
+    <div class="space-y-6">
+        <!-- Profile Header -->
+        <div class="flex items-center justify-between">
+            <h1 class="text-3xl font-bold text-gray-900 dark:text-white">@ViewData["Title"]</h1>
+        </div>
+
+        <!-- Profile Card -->
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
+            <!-- Basic Information Section -->
+            <div class="px-6 py-5 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
+                <div>
+                    <h2 class="text-lg font-medium text-gray-900 dark:text-white">Basic Information</h2>
+                    <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Your personal details and account information.</p>
+                </div>
+                <div class="flex gap-2">
+                    <button id="cancelEditBtn" class="hidden cursor-pointer px-4 py-2 bg-gray-100 dark:bg-red-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-sm font-medium rounded-md text-gray-700 dark:text-gray-200 transition-colors">
+                        Cancel
+                    </button>
+                    <button id="editProfileBtn" class="cursor-pointer px-4 py-2 bg-[var(--color-primary)] dark:bg-[var(--color-primary)] hover:bg-[var(--hover)] dark:hover:bg-[var(--hover)] text-sm font-medium rounded-md text-white dark:text-gray-200 transition-colors">
+                        Edit Profile
+                    </button>     
+                </div>
+
+            </div>
+
+            <div id="display" class="px-6 py-5">
+                <div  class="flex flex-col md:flex-row gap-8">
+                    <!-- Profile Picture -->
+                    <div class="flex-shrink-0">
+                        <img src="~/images/p" alt="Profile Picture" class="rounded-full h-32 w-32 object-cover border-4 border-white dark:border-gray-700 shadow-lg">
+                        <button class="mt-4 w-full px-3 py-2 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-sm font-medium rounded-md text-gray-700 dark:text-gray-200 transition-colors">
+                            Change Photo
+                        </button>
+                    </div>
+
+                    <!-- Profile Details -->
+                    <div class="flex-grow space-y-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Full Name</label>
+                                <div class="text-gray-900 dark:text-white font-medium"><span id="displayName">@Model.Name</span></div>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Role</label>
+                                <div class="text-gray-900 dark:text-white font-medium">@Model.Role</div>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Username</label>
+                                <div class="text-gray-900 dark:text-white font-medium"><span id="displayUsername">@Model.Username</span></div>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email</label>
+                                <div class="text-gray-900 dark:text-white font-medium"><span id="displayEmail">@Model.Email</span></div>
+                            </div>   
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Member Since</label>
+                            <div class="text-gray-900 dark:text-white font-medium">@Model.Created_At.ToString("MMMM dd, yyyy")</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="edit" class="px-6 py-5">
+                <form id="editProfileForm">
+                    <div class="hidden flex flex-col md:flex-row gap-8">
+                        <!-- Profile Picture -->
+                        <div class="flex-shrink-0">
+                            <img src="~/images/profile-user.png" alt="Profile Picture" class="rounded-full h-32 w-32 object-cover border-4 border-white dark:border-gray-700 shadow-lg">
+                            <button class="mt-4 w-full px-3 py-2 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-sm font-medium rounded-md text-gray-700 dark:text-gray-200 transition-colors">
+                                Change Photo
+                            </button>
+                        </div>
+
+                        <!-- Profile Details -->
+                        <div class="flex-grow space-y-4">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Full Name</label>
+                                    <input type="text" name="Name" value="@Model.Name" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Role</label>
+                                    <div class="text-gray-900 dark:text-white font-medium">@Model.Role</div>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Username</label>
+                                    <input type="text" name="Username" value="@Model.Username" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email</label>
+                                    <div class="text-gray-900 dark:text-white font-medium"><span id="displayEmail">@Model.Email</span></div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Member Since</label>
+                                <div class="text-gray-900 dark:text-white font-medium">@Model.Created_At.ToString("MMMM dd, yyyy")</div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Change Email Section -->
+            <div class="px-6 py-5 border-t border-gray-200 dark:border-gray-700">
+                <h2 class="text-lg font-medium text-gray-900 dark:text-white">Update Email Address</h2>
+                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Change the email address associated with your account.</p>
+
+                <form id="changeEmail" class="mt-4 space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="currentEmail" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Current Email</label>
+                            <input type="email" id="currentEmail" value="@Model.Email" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white" disabled>
+                        </div>
+                        <div>
+                            <label for="newEmail" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">New Email</label>
+                            <input type="email" id="newEmail" name="NewEmail" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white" required>
+                            <span id="emailError" class="hidden text-red-500 text-xs mt-1"></span>
+                        </div>
+                    </div>
+                    <div>
+                        <label for="emailPassword" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Confirm Password</label>
+                        <input type="password" id="emailPassword" name="Password" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white" required>
+                        <span id="passwordError" class="hidden text-red-500 text-xs mt-1"></span>
+                    </div>
+                    <div class="flex justify-end">
+                        <button type="submit" class="cursor-pointer px-4 py-2 bg-[var(--color-primary)] hover:bg-[var(--hover)] text-white font-medium rounded-md shadow-sm transition-colors">
+                            Update Email
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Change Password Section -->
+            <div class="px-6 py-5 border-t border-gray-200 dark:border-gray-700">
+                <h2 class="text-lg font-medium text-gray-900 dark:text-white">Change Password</h2>
+                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Ensure your account is using a long, random password to stay secure.</p>
+
+                <form id="changePassword" class="mt-4 space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="newPassword" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">New Password</label>
+                            <input type="password" id="newPassword" name="newPassword" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white" required>
+                            <span id="newError" class="hidden text-red-500 text-xs mt-1"></span>
+                        </div>
+                        <div>
+                            <label for="confirmPassword" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Confirm New Password</label>
+                            <input type="password" id="confirmPassword" name="confirmPassword" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white" required>
+                            <span id="confirmError" class="hidden text-red-500 text-xs mt-1"></span>
+                        </div>
+                    </div>
+                    <div class="flex justify-end">
+                        <button id="changePassBtn" type="submit" class="cursor-pointer px-4 py-2 bg-[var(--color-primary)] hover:bg-[var(--hover)] text-white font-medium rounded-md shadow-sm transition-colors">
+                            Change Password
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const editButton = document.getElementById('editProfileBtn');
+        const cancelButton = document.getElementById('cancelEditBtn');
+        const displaySection = document.getElementById('display');
+        const editSection = document.getElementById('edit');
+        const editForm = document.getElementById('editProfileForm');
+
+        editButton.addEventListener('click', async function () {
+            if (editButton.textContent.trim() === 'Edit Profile') {
+                // Switch to Edit Mode
+                displaySection.classList.add('hidden');
+                editSection.classList.remove('hidden');
+                const editInnerDiv = editSection.querySelector('div');
+                if (editInnerDiv) {
+                    editInnerDiv.classList.remove('hidden');
+                    editInnerDiv.classList.add('flex');
+                }
+                editButton.textContent = 'Save Changes';
+                cancelButton.classList.remove('hidden');
+            } else {
+                // Save Changes
+                editButton.disabled = true; // Disable button while saving
+                const formData = new FormData(editForm);
+
+                try {
+                    const response = await fetch('/User/UpdateProfile', {
+                        method: 'PUT',
+                        body: formData,
+                    });
+                    const data = await response.json();
+
+                    if (!response.ok) {
+                        showToast(data.message, 'error');
+                    } else {
+                        showToast(data.message, 'success');
+                         document.getElementById('displayName').textContent = formData.get('Name');
+                         document.getElementById('displayUsername').textContent = formData.get('Username');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                } finally {
+                    editButton.disabled = false; 
+                }
+
+                displaySection.classList.remove('hidden');
+                editSection.classList.add('hidden');
+                editButton.textContent = 'Edit Profile';
+                cancelButton.classList.add('hidden');
+            }
+        });
+
+        cancelButton.addEventListener('click', function () {
+            // Cancel editing
+            displaySection.classList.remove('hidden');
+            editSection.classList.add('hidden');
+            editButton.textContent = 'Edit Profile';
+            cancelButton.classList.add('hidden');
+        });
+    });
+
+    document.getElementById("changeEmail").addEventListener("submit", function (e) {
+        e.preventDefault();
+
+        const form = e.target;
+        const submitButton = form.querySelector('button[type="submit"]');
+        const newEmail = document.getElementById("newEmail").value;
+        const password = document.getElementById("emailPassword").value;
+
+        // Disable button while processing
+        submitButton.disabled = true;
+
+        fetch('/User/ChangeEmail', {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                Email: newEmail,
+                Password: password
+            })
+        })
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(err => { throw err; });
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                form.reset();
+
+                showToast(data.message, 'success');
+                document.getElementById("currentEmail").value = newEmail;
+                document.getElementById("displayEmail").textContent = newEmail;
+            } else {
+                if (data.field === 'email') {
+                    document.getElementById("emailError").textContent = data.message;
+                    document.getElementById("emailError").classList.remove('hidden');
+                } else if (data.field === 'password') {
+                    document.getElementById("passwordError").textContent = data.message;
+                    document.getElementById("passwordError").classList.remove('hidden');
+                }
+            }
+        })
+        .catch(error => {
+            showToast(error.message || "Something went wrong. Please try again.", 'error');
+            console.error('Error:', error);
+        })
+        .finally(() => {
+            submitButton.disabled = false;
+        });
+    });
+
+    document.getElementById("newEmail").addEventListener("input", function() {
+        document.getElementById("emailError").classList.add('hidden');
+    });
+
+    document.getElementById("emailPassword").addEventListener("input", function() {
+        document.getElementById("passwordError").classList.add('hidden');
+    });
+
+    document.getElementById("changePassword").addEventListener("submit", function (e) {
+        e.preventDefault();
+
+        const form = e.target;
+        const submitButton = form.querySelector('button[type="submit"]');
+        const newPassword = document.getElementById("newPassword").value;
+        const confirmPassword = document.getElementById("confirmPassword").value;
+
+        document.getElementById("newError").classList.add('hidden');
+        document.getElementById("confirmError").classList.add('hidden');
+
+        if (newPassword !== confirmPassword) {
+            document.getElementById("confirmError").textContent = "Passwords do not match.";
+            document.getElementById("confirmError").classList.remove('hidden');
+            return;
+        }
+
+        submitButton.disabled = true;
+
+        fetch('/User/ChangePassword', {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                Password: newPassword,
+            })
+        })
+        .then(response => {
+            if (!response.ok) {
+                return response.text().then(text => {
+                    try {
+                        return Promise.reject(JSON.parse(text));
+                    } catch {
+                        return Promise.reject({ message: text || "Unknown error occurred" });
+                    }
+                });
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                showToast(data.message, 'success');
+                form.reset();
+            } else {
+                if (data.field === 'password') {
+                    document.getElementById("newError").textContent = data.message;
+                    document.getElementById("newError").classList.remove('hidden');
+                }
+            }
+        })
+        .catch(error => {
+            showToast(error.message || "Something went wrong. Please try again.", 'error');
+            console.error('Error:', error);
+        })
+        .finally(() => {
+            submitButton.disabled = false;
+        });
+    });
+
+    document.getElementById("newPassword").addEventListener("input", function () {
+        document.getElementById("newError").classList.add('hidden');
+    });
+
+    document.getElementById("confirmPassword").addEventListener("input", function () {
+        document.getElementById("confirmError").classList.add('hidden');
+    });
+
+</script>
+

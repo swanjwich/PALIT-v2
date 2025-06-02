@@ -1,16 +1,36 @@
 ﻿@{
-    ViewData["Title"] = "Email Verification Required";
+    ViewData["Title"] = "Verify Email";
 }
-<div class="container" style="margin-top: 7rem;">
-    <h2 class="mt-5">Email Verification Required</h2>
+<section class="mx-auto flex w-full max-w-5xl items-center justify-center min-h-screen bg-gray-100 px-4 mt-0">
+    <div class="bg-white shadow-lg rounded-lg p-6 max-w-md w-full text-center">
+        <h2 class="text-2xl font-bold text-gray-800">Email Verification Needed</h2>
 
-    <p>
-        Thank you for registering! Please check your email for a verification link to activate your account.
-        You will be able to access the home page once you have verified your email.
-    </p>
+        <p class="mt-3 text-gray-600">
+            Before you can access your account, you need to verify your email first. 
+            A verification link has been sent to your email.
+            Please check your inbox and click the link to activate your account.
+        </p>
 
-    <p>
-        If you did not receive the email, you can <a href="#">resend the verification email</a>.
-    </p>
+        <p class="mt-3 text-gray-500">Didn't receive the email?</p>
 
-</div>
+        <form asp-controller="Auth" asp-action="ResendVerification" method="post" class="mt-4">
+            <input type="email" name="email" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+                   placeholder="Enter your email" required>
+
+            <button type="submit" class="w-full mt-3 px-6 py-2 bg-[var(--color-primary)] text-white rounded-lg hover:bg-[var(--hover)] transition duration-300">
+                Resend Verification Email
+            </button>
+        </form>
+
+        <p class="mt-4 text-gray-600">
+            You may close this page once your email is verified. Happy shopping!
+        </p>
+    </div>
+
+</section>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

@@ -1,21 +1,25 @@
-﻿using it15_palit.Data;
-using it15_palit.Entity;
-using it15_palit.Models;
+﻿using cce106_palit.Data;
+using cce106_palit.Entity;
+using cce106_palit.Models;
+using cce106_palit.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
-namespace it15_palit.Controllers
+namespace cce106_palit.Controllers
 {
     public class ShopController : Controller
     {
         private readonly ApplicationDbContext _context;
         private readonly PayMongoService _payMongoService;
+        private readonly EmailService _emailService;
 
-        public ShopController(ApplicationDbContext context, PayMongoService payMongoService)
+        public ShopController(ApplicationDbContext context, PayMongoService payMongoService, EmailService emailService)
         {
             _context = context;
             _payMongoService = payMongoService;
+            _emailService = emailService;
         }
 
 
@@ -32,6 +36,7 @@ namespace it15_palit.Controllers
             ViewBag.ProductDescription = product.Description;
             ViewBag.ProductPrice = product.Price;
             ViewBag.ProductImage = product.Image_url;
+            ViewBag.Stock = product.StockQuantity;
 
             return View();
         }
@@ -52,11 +57,11 @@ namespace it15_palit.Controllers
             }
             else
             {
-                TempData["Message"] = "Unable to access cart. Please log in again.";
                 return RedirectToAction("Login", "Auth");
             }
         }
 
+        [Authorize]
         [HttpPost]
         public IActionResult AddToCart(string customerId, int productId, int quantity)
         {
@@ -65,27 +70,58 @@ namespace it15_palit.Controllers
                 return RedirectToAction("Login", "Account");
             }
 
-            var cartItem = new Cart
+            var product = _context.Products.FirstOrDefault(p => p.Id == productId);
+            if (product == null)
             {
-                Customer_Id = int.Parse(customerId),
-                Product_Id = productId,
-                Quantity = quantity,
-                Is_Checked = false,
-                Created_At = DateTime.Now,
-                Updated_At = DateTime.Now
-            };
+                TempData["Message"] = "Product not found.";
+                TempData["MessageType"] = "error";
+                return RedirectToAction("ProductDetails", "Shop", new { id = productId });
+            }
+
+            if (quantity > product.StockQuantity)
+            {
+                TempData["Message"] = $"Only {product.StockQuantity} items are available in stock.";
+                TempData["MessageType"] = "warning";
+                return RedirectToAction("ProductDetails", "Shop", new { id = productId });
+            }
+
+            int parsedCustomerId = int.Parse(customerId);
 
             var existingCartItem = _context.Carts
-                .FirstOrDefault(c => c.Customer_Id == cartItem.Customer_Id && c.Product_Id == cartItem.Product_Id);
+                .FirstOrDefault(c => c.Customer_Id == parsedCustomerId && c.Product_Id == productId);
 
             if (existingCartItem != null)
             {
-                TempData["Message"] = "Item is already in your cart.";
+                int totalRequested = existingCartItem.Quantity + quantity;
+
+                if (totalRequested > product.StockQuantity)
+                {
+                    TempData["Message"] = $"You already have {existingCartItem.Quantity} in your cart. Only {product.StockQuantity - existingCartItem.Quantity} more can be added.";
+                    TempData["MessageType"] = "warning";
+                }
+                else
+                {
+                    existingCartItem.Quantity += quantity;
+                    existingCartItem.Updated_At = DateTime.Now;
+                    TempData["Message"] = "Item quantity updated in your cart.";
+                    TempData["MessageType"] = "success";
+                }
             }
             else
             {
+                var cartItem = new Cart
+                {
+                    Customer_Id = parsedCustomerId,
+                    Product_Id = productId,
+                    Quantity = quantity,
+                    Is_Checked = false,
+                    Created_At = DateTime.Now,
+                    Updated_At = DateTime.Now
+                };
+
                 _context.Carts.Add(cartItem);
                 TempData["Message"] = "Item has been added to your cart.";
+                TempData["MessageType"] = "success";
             }
 
             _context.SaveChanges();
@@ -93,6 +129,8 @@ namespace it15_palit.Controllers
             return RedirectToAction("ProductDetails", "Shop", new { id = productId });
         }
 
+
+        [Authorize]
         [HttpPost]
         public IActionResult BuyNow(string customerId, int productId, int quantity)
         {
@@ -117,11 +155,13 @@ namespace it15_palit.Controllers
             if (existingCartItem != null)
             {
                 TempData["Message"] = "Item is already in your cart.";
+                TempData["MessageType"] = "info";
             }
             else
             {
                 _context.Carts.Add(cartItem);
                 TempData["Message"] = "Item has been added to your cart.";
+                TempData["MessageType"] = "success";
             }
 
             _context.SaveChanges();
@@ -129,6 +169,63 @@ namespace it15_palit.Controllers
             return RedirectToAction("CheckOut", "Shop", new { id = productId });
         }
 
+        [Authorize]
+        [HttpPost]
+        public IActionResult BuyAgain(string customerId, List<int> productIds, List<int> quantities)
+        {
+            if (customerId == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var customerIdInt = int.Parse(customerId);
+            var messages = new List<string>();
+            var messageTypes = new List<string>();
+            int? firstProductId = null;
+
+            // Loop through all products
+            for (int i = 0; i < productIds.Count; i++)
+            {
+                var productId = productIds[i];
+                var quantity = quantities[i];
+
+                var cartItem = new Cart
+                {
+                    Customer_Id = customerIdInt,
+                    Product_Id = productId,
+                    Quantity = quantity,
+                    Is_Checked = true,
+                    Created_At = DateTime.Now,
+                    Updated_At = DateTime.Now
+                };
+
+                var existingCartItem = _context.Carts
+                    .FirstOrDefault(c => c.Customer_Id == cartItem.Customer_Id && c.Product_Id == cartItem.Product_Id);
+
+                if (existingCartItem != null)
+                {
+                    messages.Add($"'{_context.Products.Find(productId)?.Name}' is already in your cart");
+                    messageTypes.Add("info");
+                }
+                else
+                {
+                    _context.Carts.Add(cartItem);
+                    messages.Add($"'{_context.Products.Find(productId)?.Name}' added to cart");
+                    messageTypes.Add("success");
+                }
+
+                firstProductId ??= productId;
+            }
+
+            _context.SaveChanges();
+
+            TempData["Message"] = string.Join(". ", messages);
+            TempData["MessageType"] = messageTypes.Contains("success") ? "success" : "info";
+
+            return RedirectToAction("CheckOut", "Shop", new { id = firstProductId });
+        }
+
+        [Authorize]
         [HttpPost]
         public JsonResult EditQuantity(int productId, int newQuantity)
         {
@@ -153,6 +250,7 @@ namespace it15_palit.Controllers
             return Json(new { newTotalPrice, message });
         }
 
+        [Authorize]
         [HttpPost]
         public JsonResult RemoveProduct(int productId)
         {
@@ -169,6 +267,7 @@ namespace it15_palit.Controllers
             return Json(new { message });
         }
 
+        [Authorize]
         [HttpPost]
         public IActionResult RemoveAll(List<int> productIds)
         {
@@ -179,11 +278,12 @@ namespace it15_palit.Controllers
 
             if (result)
             {
-                return Json(new { message = "Selected items have been removed from your cart." });
+                return Json(new { success = true,message = "Selected items have been removed from your cart." });
             }
-            return Json(new { message = "Error removing selected items." });
+            return Json(new { success = false, message = "Error removing selected items." });
         }
 
+        [Authorize]
         [HttpPost]
         public JsonResult UpdateCheckedStatus(int productId, bool isChecked)
         {
@@ -198,7 +298,7 @@ namespace it15_palit.Controllers
             return Json(new { });
         }
 
-
+        [Authorize]
         public IActionResult CheckOut()
         {
             var userIdString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -228,6 +328,7 @@ namespace it15_palit.Controllers
             return View(cartItems);
         }
 
+        [Authorize]
         public async Task<IActionResult> CreatePayment(decimal amount, string paymentMethod)
         {
             var userIdString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -246,6 +347,14 @@ namespace it15_palit.Controllers
                 return RedirectToAction("Login", "Auth"); 
             }
 
+            if (string.IsNullOrWhiteSpace(customer.Address))
+            {
+                TempData["Message"] = "You must add a delivery address before placing an order.";
+                TempData["MessageType"] = "error";
+                return RedirectToAction("Checkout", "Shop");
+            }
+
+
             var cartItems = await _context.Carts
                         .Where(c => c.Customer_Id == customerId && c.Is_Checked == true)
                         .Include(c => c.Product)
@@ -257,9 +366,23 @@ namespace it15_palit.Controllers
                 return RedirectToAction("Checkout", "Shop");
             }
 
+            foreach (var cartItem in cartItems)
+            {
+                if (cartItem.Product.StockQuantity < cartItem.Quantity)
+                {
+                    TempData["Message"] = $"Insufficient stock for {cartItem.Product.Name}.";
+                    TempData["MessageType"] = "error";
+                    return RedirectToAction("Checkout", "Shop");
+                }
+            }
+
             string customerName = customer.Name;
             string customerEmail = customer.Email;
             string customerPhone = customer.Contact_Number ?? "N/A"; 
+            if(!string.IsNullOrEmpty(customerPhone) && customerPhone.StartsWith("0"))
+            {
+                customerPhone = customerPhone.Substring(1);
+            }
             string orderDescription = "Orders";
             string successUrl = Url.Action("SuccessCheckout", "Shop", null, Request.Scheme) ?? string.Empty;
             string cancelUrl = Url.Action("CheckOutCancelled", "Shop", null, Request.Scheme) ?? string.Empty;
@@ -281,6 +404,13 @@ namespace it15_palit.Controllers
                cancelUrl
             );
 
+            if (checkoutUrl == null)
+            {
+                TempData["Message"] = "Sorry, the minimum order total must be ₱20.00 due to payment provider restrictions.";
+                TempData["MessageType"] = "info.";
+                return RedirectToAction("CheckOut");
+            }
+
             if (!string.IsNullOrEmpty(checkoutUrl))
             {
                 int pending = 1;
@@ -298,8 +428,11 @@ namespace it15_palit.Controllers
                 _context.Orders.Add(order);
                 await _context.SaveChangesAsync();
 
+
                 foreach (var cartItem in cartItems)
                 {
+                    cartItem.Product.StockQuantity -= cartItem.Quantity;
+
                     var orderDetail = new OrderDetail
                     {
                         Order_Id = order.Id,
@@ -310,8 +443,8 @@ namespace it15_palit.Controllers
                     };
 
                     _context.OrderDetails.Add(orderDetail);
-                    await _context.SaveChangesAsync();
-                }
+                    await _context.SaveChangesAsync();   
+               }
 
                 var payment = new Payment
                 {
@@ -334,6 +467,7 @@ namespace it15_palit.Controllers
                 return RedirectToAction("Checkout", "Shop");
         }
 
+        [Authorize]
         public async Task<IActionResult> CheckOutCancelled()
         {
             var customerIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
@@ -367,6 +501,7 @@ namespace it15_palit.Controllers
             return View();
         }
 
+        [Authorize]
         public async Task<IActionResult> SuccessCheckout()
         {
             var customerIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
@@ -403,10 +538,13 @@ namespace it15_palit.Controllers
 
             var payments = sessionDetails.data.attributes.payments;
 
-            string? paymongoPaymentStatus = (payments?.Count > 0)
+            string? paymongoPaymentStatus = payments?.Count > 0
                                             ? payments[0].attributes?.status
                                             : null;
 
+            string? paymentMethod = (payments != null && payments.Count > 0)
+                                    ? payments[0]?.attributes?.source?.type
+                                    : null;
 
             if (string.IsNullOrEmpty(paymongoPaymentStatus))
             {
@@ -416,6 +554,7 @@ namespace it15_palit.Controllers
             if (paymongoPaymentStatus == "paid")
             {
                 order.Status_Id = 2;
+                payment.Method = paymentMethod;
                 payment.Status = "Paid";
                 payment.Updated_at = DateTime.Now;
 
@@ -424,14 +563,25 @@ namespace it15_palit.Controllers
                                       .ToListAsync();
 
                 _context.Carts.RemoveRange(cartItems);
-
                 await _context.SaveChangesAsync();
+
+                var customer = await _context.Customers.FindAsync(customerId);
+                if (customer != null && !string.IsNullOrEmpty(customer.Email))
+                {
+                    string subject = $"Your Order #{order.Id} has been confirmed";
+                    string body = $@"
+                    <h2>Thank you for your purchase, {customer.Name}!</h2>
+                    <p>Your order ID: <strong>{order.Id}</strong> has been successfully placed and paid.</p>
+                    <p>We will process and ship your order shortly.</p>
+                    <p>Transaction ID: {payment.Transaction_Id}</p>
+                    <br/>
+                    <p>- The PALIT Team</p>";
+
+                    await _emailService.SendEmailAsync(customer.Email, subject, body);
+
+                }
             }
-
             return View();
-        }
-        
-        
-
+        }      
     }
 }

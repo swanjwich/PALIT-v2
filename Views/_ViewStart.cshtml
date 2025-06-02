@@ -1,10 +1,20 @@
 ﻿@{
-    if (ViewContext.RouteData.Values["controller"].ToString() == "Auth")
+    if (ViewContext.RouteData.Values["controller"].ToString() == "Error")
     {
-        Layout = "~/Views/Shared/_AuthLayout.cshtml";
+        Layout = "~/Views/Shared/_ErrorLayout.cshtml";
     }
     else
     {
         Layout = "~/Views/Shared/_Layout.cshtml";
+        var userId = Context.User?.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+        if (int.TryParse(userId, out int customerId))
+        {
+            var db = (cce106_palit.Data.ApplicationDbContext)Context.RequestServices.GetService(typeof(cce106_palit.Data.ApplicationDbContext));
+            var cartCount = db.Carts
+                .Where(c => c.Customer_Id == customerId)
+                .Sum(c => c.Quantity);
+            ViewData["CartCount"] = cartCount;
+        }
     }
 }

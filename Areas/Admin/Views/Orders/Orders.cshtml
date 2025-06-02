@@ -1,83 +1,195 @@
-﻿@model X.PagedList.IPagedList<it15_palit.Entity.Order>
-@using X.PagedList.Mvc.Core;
+﻿@model X.PagedList.IPagedList<Order>
+@using X.PagedList.Mvc.Core
+@using cce106_palit.Entity
 @{
     ViewData["Title"] = "Orders";
-    ViewData["Header"] = "Orders";
 }
-@if (TempData["Message"] != null)
-{
-    <div class="toast align-items-center bg-blue border-0 position-fixed top-0 end-0" style="margin-top: 3rem;" role="alert" aria-live="assertive" aria-atomic="true" id="toast">
-        <div class="d-flex">
-            <div class="toast-body text-white">
-                @TempData["Message"]
-            </div>
-            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-        </div>
-    </div>
-}
-<div class="content py-4">
-    <div class="card-body bg-white">
-        <div class="table-responsive mt-3 w-100">
-            <table class="table table-hover" id="ordersTable">
 
-                <thead>
-                    <tr>
-                        <th>Order ID</th>
-                        <th>Customer Name</th>
-                        <th>Order Date</th>
-                        <th>Total Amount</th>
-                        <th>Status</th>
-                        <th>Order Details</th>
-                    </tr>
-                </thead>
-                <tbody>
+<div class="py-4 mt-16 sm:mt-8 space-y-6">
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden">
+        <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
+            <h1 class="text-2xl font-semibold text-gray-900 dark:text-white">
+                @ViewData["Title"]
+            </h1>
+            <div class="relative sm:w-64">
+                <form method="get" action="@Url.Action("Orders")" class="flex items-center">
+                    <div class="relative flex-grow">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400 dark:text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                            </svg>
+                        </div>
+                        <input type="text"
+                        name="searchTerm"
+                        id="orderSearch"
+                        value="@ViewBag.SearchTerm"
+                        placeholder="Search order by ID..."
+                        class="block w-full pl-10 pr-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-sm text-gray-800 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                        aria-label="Search order">
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        @if (Model.Any())
+        {
+            <div class="overflow-x-auto">
+                <div class="w-full table-auto hidden sm:table text-sm text-left text-gray-800 dark:text-gray-100">
+                    <div class="table-header-group bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300">
+                        <div class="table-row">
+                            <div class="table-cell px-4 py-2 font-semibold">ID</div>
+                            <div class="table-cell px-4 py-2 font-semibold">Customer</div>
+                            <div class="table-cell px-4 py-2 font-semibold">Order Date</div>
+                            <div class="table-cell px-4 py-2 font-semibold">Total</div>
+                            <div class="table-cell px-4 py-2 font-semibold">Status</div>
+                            <div class="table-cell px-4 py-2 font-semibold">Details</div>
+                        </div>
+                    </div>
+
+
+
                     @foreach (var order in Model)
                     {
-                        <tr>
-                            <td>@order.Id</td>
-                            <td>@order.Customer.Name</td>
-                            <td>@order.OrderDate.ToString("yyyy-MM-dd")</td>
-                            <td>₱@order.Grand_Total.ToString("N2")</td>
-                            <td>
-                                <form asp-action="UpdateStatus" asp-controller="Orders" asp-area="Admin" method="post" style="display:inline;">
-                                    <select name="StatusId" onchange="this.form.submit()">
-                                        @foreach (var status in ViewBag.Statuses)
-                                        {
-                                            if (status.Id == order.Status_Id)
+                        <div class="table-row border-t border-gray-200 dark:border-gray-700">
+                            <div class="table-cell px-4 py-3">@order.Id</div>
+                            <div class="table-cell px-4 py-3">
+                                @(order.Customer != null ? order.Customer.Name : "Deleted Account")
+                            </div>
+                            <div class="table-cell px-4 py-3">@order.OrderDate.ToString("MMMM dd, yyyy hh:mm tt")</div>
+                            <div class="table-cell px-4 py-3">₱@order.Grand_Total.ToString("N2")</div>
+                            <div class="table-cell px-4 py-3">
+                                @{
+                                    int completedStatusId = 4;
+                                    int cancelledStatusId = 5;
+                                }
+                                @if (order.Status_Id == completedStatusId)
+                                {
+                                    <span class="inline-flex items-center px-3 py-2 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                        Completed
+                                    </span>
+                                }
+                                else if (order.Status_Id == cancelledStatusId)
+                                {
+                                    <span class="inline-flex items-center px-3 py-2 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                        Cancelled
+                                    </span>
+                                }
+                                else
+                                {
+                                    <form asp-action="UpdateStatus" asp-controller="Orders" asp-area="Admin" method="post">
+                                        <select name="StatusId" class="bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded px-2 py-1"
+                                        onchange="this.form.submit()">
+                                            @foreach (var status in ViewBag.Statuses)
                                             {
-                                                <option value="@status.Id" selected="selected">@status.Name</option>
+                                                bool isDisabled = status.Id < order.Status_Id || status.Id == cancelledStatusId || status.Id == completedStatusId;
+                                                <option value="@status.Id"
+                                                selected="@(status.Id == order.Status_Id)"
+                                                disabled="@(isDisabled ? "disabled" : null)">
+                                                    @status.Name
+                                                </option>
                                             }
-                                            else
-                                            {
-                                                <option value="@status.Id">@status.Name</option>
-                                            }
-                                        }
-                                    </select>
-                                    <input type="hidden" name="OrderId" value="@order.Id" />
-                                </form>
-                            </td>
-
-                                <td>
-                                <a href="@Url.Action("OrderDetails", new { orderId = order.Id })">View Details</a>
-                            </td>
-                        </tr>
+                                        </select>
+                                        <input type="hidden" name="OrderId" value="@order.Id" />
+                                    </form>
+                                }
+                            </div>
+                            <div class="table-cell px-4 py-3">
+                                <a class="text-blue-600 hover:underline" href="@Url.Action("OrderDetails", new { orderId = order.Id })">View</a>
+                            </div>
+                        </div>
                     }
-                </tbody>
-            </table>
+
+                </div>
+
+                <!-- Mobile Cards -->
+                <div class="sm:hidden space-y-4 p-4">
+                    @if (!Model.Any())
+                    {
+                        <div class="flex justify-center items-center py-10 text-center text-gray-500 dark:text-gray-400">
+                            No orders found.
+                        </div>
+                    }
+
+                    @foreach (var order in Model)
+                    {
+                        <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg shadow-sm border border-gray-200 dark:border-gray-600">
+                            <div class="text-sm text-gray-600 dark:text-gray-300"><strong>ID:</strong> @order.Id</div>
+                            <div class="text-sm text-gray-600 dark:text-gray-300"><strong>Customer:</strong> @(order.Customer != null ? order.Customer.Name : "Deleted Account")</div>
+                            <div class="text-sm text-gray-600 dark:text-gray-300"><strong>Date:</strong> @order.OrderDate.ToString("MMMM dd, yyyy hh:mm tt")</div>
+                            <div class="text-sm text-gray-600 dark:text-gray-300"><strong>Total:</strong> ₱@order.Grand_Total.ToString("N2")</div>
+                            <div class="text-sm text-gray-600 dark:text-gray-300">
+                                <strong>Status:</strong>
+                                @{
+                                    int completedStatusId = 4;
+                                    int cancelledStatusId = 5;
+                                }
+                                @if (order.Status_Id == completedStatusId)
+                                {
+                                    <span class="inline-flex items-center px-3 py-2 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                        Completed
+                                    </span>
+                                }
+                                else if (order.Status_Id == cancelledStatusId)
+                                {
+                                    <span class="inline-flex items-center px-3 py-2 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                        Cancelled
+                                    </span>
+                                }
+                                else
+                                {
+                                    <form asp-action="UpdateStatus" asp-controller="Orders" asp-area="Admin" method="post" class="mt-1">
+                                        <select name="StatusId" class="w-full bg-white dark:bg-gray-600 border border-gray-300 dark:border-gray-500 rounded px-2 py-1"
+                                                onchange="this.form.submit()">
+                                            @foreach (var status in ViewBag.Statuses)
+                                            {
+                                                bool isDisabled = status.Id < order.Status_Id || status.Id == cancelledStatusId || status.Id == completedStatusId;
+                                                <option value="@status.Id"
+                                                        selected="@(status.Id == order.Status_Id)"
+                                                        disabled="@(isDisabled ? "disabled" : null)">
+                                                    @status.Name
+                                                </option>
+                                            }
+                                        </select>
+                                        <input type="hidden" name="OrderId" value="@order.Id" />
+                                    </form>
+                                }
+                               
+                        </div>
+                        <div class="mt-2">
+                            <a class="text-blue-600 hover:underline text-sm" href="@Url.Action("OrderDetails", new { orderId = order.Id })">View Details</a>
+                        </div>
+                    </div>
+                }
+
+            </div>
+        </div>
+        }
+        else
+        {
+            <div class="table w-full">
+                <div class="table-row">
+                    <div class="table-cell py-10 text-center text-gray-500 dark:text-gray-400" colspan="6">
+                        No orders found.
+                    </div>
+                </div>
+            </div>
+
+        }
+        <div class="py-4 flex justify-center sm:justify-center overflow-x-auto">
+            @Html.PagedListPager(Model, page => Url.Action("Orders", new { page }), new PagedListRenderOptions
+           {
+               LiElementClasses = new[] { "mx-1" },
+               PageClasses = new[] {
+                "block min-w-[36px] text-center px-3 py-1 rounded border border-gray-300 hover:bg-[var(--hover)] hover:text-white dark:border-gray-600 dark:hover:bg-gray-600"
+                },
+               UlElementClasses = new[] {
+                "flex flex-wrap justify-center gap-2 sm:gap-1"
+                },
+               ActiveLiElementClass = "bg-[var(--color-primary)] hover:bg-[var(--hover)] text-white rounded cursor-pointer"
+           })
         </div>
     </div>
-
-    <div class="pagination-wrapper mt-3 d-flex justify-content-center">
-        @Html.PagedListPager(Model, page => Url.Action("Orders", "Orders", new { page }), new PagedListRenderOptions
-   {
-       LiElementClasses = new[] { "page-item" },
-       PageClasses = new[] { "page-link" },
-       UlElementClasses = new[] { "pagination" }
-   })
-   </div>
-
 </div>
-
 <script>
     document.querySelectorAll('select[name="StatusId"]').forEach(function (select) {
         select.addEventListener('change', function () {

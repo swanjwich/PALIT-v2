@@ -1,0 +1,108 @@
+﻿@using cce106_palit.Entity
+@model Customer
+
+@{
+    ViewData["Title"] = "Change Email";
+    var customerId = Context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+}
+<div class="mt-34 w-full max-w-5xl mx-auto">
+    <div class="flex flex-col lg:flex-row gap-6">
+        @await Html.PartialAsync("~/Views/Shared/Partials/_AccountSidebar.cshtml", customerId)
+
+        <div class="w-full lg:w-4/5">
+            <div id="email">
+                <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
+                    <h4 class="text-xl font-bold mb-1 dark:text-white">Change Email</h4>
+                    <p class="text-sm text-gray-600 dark:text-gray-300 mb-4">
+                        Once you update your email, you’ll need to verify it through a confirmation link we’ll send to your new inbox.
+                    </p>
+                    <form id="changeEmail" class="space-y-4">
+                        <input type="hidden" name="customerId" value="@customerId" />
+                        <div>
+                            <label for="email" class="block text-sm font-medium flex items-center gap-1 dark:text-gray-300">
+                                Current Email
+                                @if (Model.IsVerified == true)
+                                {
+                                    <i class="ri-checkbox-circle-fill text-green-500 dark:text-green-400"></i>
+                                }
+                                else
+                                {
+                                    <i class="ri-close-circle-line text-red-500 dark:text-red-400"></i>
+                                }
+                            </label>
+                            <input type="email" id="currentEmail" value="@Model.Email" class="border-gray-800 focus:border-blue-500 focus:ring-blue-500 rounded-md shadow-sm block w-full px-4 py-2 text-gray-800 bg-white dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 focus:ring-opacity-40 dark:focus:border-blue-300 focus:outline-none focus:ring focus:ring-blue-300" readonly />
+                        </div>
+                        <div>
+                            <label for="email" class="block text-sm font-medium dark:text-white">New Email</label>
+                            <input placeholder="Enter your new email" type="email" id="email" name="Email" class="border-gray-800 focus:border-blue-500 focus:ring-blue-500 rounded-md shadow-sm block w-full px-4 py-2 text-gray-800 bg-white dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 focus:ring-opacity-40 dark:focus:border-blue-300 focus:outline-none focus:ring focus:ring-blue-300" />
+                            <span class="text-red-500 text-xs"></span>
+
+                        </div>
+                        <button type="submit" id="saveButton" class="cursor-pointer w-32 bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors duration-200 flex justify-center items-center gap-2">
+                            <span id="buttonText">Save</span>
+                            <div id="spinner" class="hidden">
+                                <div class="w-5 h-5 border-4 border-t-transparent border-white border-solid rounded-full animate-spin"></div>
+                            </div>
+                        </button>
+
+
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById("changeEmail").addEventListener("submit", function (e) {
+        e.preventDefault();
+
+        const form = e.target;
+        const customerId = form.customerId.value;
+        const email = form.Email.value;
+        const saveButton = document.getElementById("saveButton");
+        const spinner = document.getElementById("spinner");
+        const buttonText = document.getElementById("buttonText");
+
+        spinner.classList.remove("hidden");
+        buttonText.classList.add("hidden");
+
+        fetch(`/Account/ChangeEmail/${customerId}`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ email })
+        })
+        .then(res => res.json())
+        .then(data => {
+            spinner.classList.add("hidden");
+            buttonText.classList.remove("hidden");
+
+            if (data.success) {
+                form.reset();
+                showToast(data.message, 'success');
+                document.querySelector("#email span").textContent = "";
+                document.getElementById("currentEmail").value = email;
+
+            } else {
+                if (data.field === 'email') {
+                    document.querySelector("#email span").textContent = data.message;
+                } else {
+                    showToast(data.message, 'error');
+                }
+            }
+        })
+        .catch(err => {
+            spinner.classList.add("hidden");
+            buttonText.classList.remove("hidden");
+
+            showToast("Something went wrong. Please try again.", 'error');
+            console.error(err);
+        });
+    });
+
+
+
+</script>

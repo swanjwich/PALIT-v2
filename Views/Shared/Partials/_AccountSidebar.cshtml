@@ -1,0 +1,36 @@
+﻿@model string
+@{
+    string currentPage = ViewContext.RouteData.Values["action"]?.ToString();
+}
+
+
+<div class="w-full lg:w-1/5">
+    <a asp-action="Profile" asp-route-id="@Model"
+       class="w-full text-left py-2 px-4 rounded-md flex items-center gap-2 transition-all duration-200 transform
+          hover:bg-gray-200 dark:hover:bg-gray-700 hover:translate-x-1
+          @(currentPage == "Profile" ? "bg-blue-100 text-blue-600 font-semibold" : "dark:text-white")">
+        <i class="ri-user-line"></i>
+        Profile
+    </a>
+    <a asp-action="ChangeEmail" asp-route-id="@Model"
+       class="w-full text-left py-2 px-4 rounded-md flex items-center gap-2 transition-all duration-200 transform
+          hover:bg-gray-200 dark:hover:bg-gray-700 hover:translate-x-1
+          @(currentPage == "ChangeEmail" ? "bg-blue-100 text-blue-600 font-semibold" : "dark:text-white")">
+        <i class="ri-mail-line"></i>
+        Change Email
+    </a>
+    <a asp-action="ChangePassword" asp-route-id="@Model"
+       class="w-full text-left py-2 px-4 rounded-md flex items-center gap-2 transition-all duration-200 transform
+          hover:bg-gray-200 dark:hover:bg-gray-700 hover:translate-x-1
+          @(currentPage == "ChangePassword" ? "bg-blue-100 text-blue-600 font-semibold" : "dark:text-white")">
+        <i class="ri-lock-line"></i>
+        Change Password
+    </a>
+    <a asp-action="Settings" asp-route-id="@Model"
+       class="w-full text-left py-2 px-4 rounded-md flex items-center gap-2 transition-all duration-200 transform
+          hover:bg-gray-200 dark:hover:bg-gray-700 hover:translate-x-1
+          @(currentPage == "Settings" ? "bg-blue-100 text-blue-600 font-semibold" : "dark:text-white")">
+        <i class="ri-settings-line"></i>
+        Settings
+    </a>
+</div>

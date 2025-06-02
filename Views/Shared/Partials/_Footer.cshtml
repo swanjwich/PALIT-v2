@@ -1,130 +1,69 @@
-﻿<footer class="text-center text-lg-start text-white mt-5 bg-blue">
-    <div class="container p-4 pb-0">
-        <section class="">
-            <div class="row">
-                <div class="col-md-3 col-lg-3 col-xl-3 mx-auto mt-3">
-                    <h6 class="text-uppercase mb-4 font-weight-bold">
-                        PALIT
-                    </h6>
-                    <p>
-                        PALIT is your go-to local supermarket in Davao City. With a commitment to "TATAK LOCAL, BARATO, and PRESKO,"
-                        we provide fresh, affordable products sourced from local suppliers. Shop with us for a true community experience.
-                    </p>
-                </div>
-                <hr class="w-100 clearfix d-md-none" />
+﻿@{
+    var isTermsPrivacyPage = ViewContext.RouteData.Values["action"]?.ToString() == "Terms" ||
+                            ViewContext.RouteData.Values["action"]?.ToString() == "Privacy" ||
+                        ViewContext.RouteData.Values["action"]?.ToString() == "Return";
+}
 
-                <div class="col-md-2 col-lg-2 col-xl-2 mx-auto mt-3">
-                    <h6 class="text-uppercase mb-4 font-weight-bold">ABOUT PALIT</h6>
-                    <p>
-                        <a id="about-us" class="text-white text-decoration-none @((ViewContext.RouteData.Values["action"].ToString() == "About" && ViewContext.RouteData.Values["controller"].ToString() == "Index") ? "active" : "")" asp-area="" asp-controller="Home" asp-action="About">About Us</a>
-                    </p>
-                    <p>
-                        <a href="#" class="text-white text-decoration-none">Privacy Policy</a>
-                    </p>
-                    <p>
-                        <a href="#" class="text-white text-decoration-none">Terms of Service</a>
-                    </p>
-                    <p>
-                        <a href ="#" class="text-white text-decoration-none">Return Policy</a>
-                    </p>
-                    <p>
-                        <a href="#" class="text-white text-decoration-none">FAQs</a>
+@if (!isTermsPrivacyPage)
+{
+    <footer class="bg-[var(--color-primary)] text-white mt-5 py-6">
+        <div class="max-w-6xl mx-auto px-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- About Section -->
+                <div>
+                    <h6 class="text-lg font-semibold mb-3">PALIT</h6>
+                    <p class="text-sm">
+                        PALIT is your go-to local supermarket in Davao City. With a commitment to "TATAK LOCAL, BARATO, and SULIT," we provide affordable products sourced from local suppliers. Shop with us for a true community experience.
                     </p>
                 </div>
 
-                <hr class="w-100 clearfix d-md-none" />
+                <!-- About PALIT Links -->
+                <div>
+                    <h6 class="text-lg font-semibold mb-3">ABOUT PALIT</h6>
+                    <ul class="space-y-2 text-sm">
+                        <li><a asp-action="About" asp-controller="Home" class="hover:underline">About Us</a></li>
+                        <li><a asp-action="Privacy" asp-controller="Home" class="hover:underline">Privacy Policy</a></li>
+                        <li><a asp-action="Terms" asp-controller="Home" class="hover:underline">Terms of Service</a></li>
+                        <li><a asp-action="FAQs" asp-controller="Home" class="hover:underline">FAQs</a></li>
+                    </ul>
+                </div>
 
-                <div class="col-md-3 col-lg-2 col-xl-2 mx-auto mt-3">
-                    <h6 class="text-uppercase mb-4 font-weight-bold">
-                        PAYMENT
-                    </h6>
-                    <div class="row">
-                        <div class="col-3 col-md-4 col-xl-6 mb-3 ">
-                            <a href="#">
-                                <div class="card bg-white border-0 p-2 h-100 d-flex justify-content-center">
-                                    <img src="~/images/payment/gcash.png" class="card-img" alt="GCash" />
-                                </div>
-                            </a>     
-                        </div>
-                        <div class="col-3 col-md-4 col-xl-6 mb-3 ">
-                            <a href="#">
-                                <div class="card bg-white border-0 p-2 h-100 d-flex justify-content-center">
-                                    <img src="~/images/payment/maya.jpg" class="card-img" alt="Maya" />
-                                </div>
-                            </a>
-                        </div>
-                        <div class="col-3 col-md-4 col-xl-6 mb-3">
-                            <a href="#">
-                                <div class="card bg-white border-0 h-100 d-flex justify-content-center">
-                                    <img src="~/images/payment/mastercard.png" class="card-img" alt="Mastercard" />
-                                </div>
-                            </a>
-                        </div>
-                        <div class="col-3 col-md-4 col-xl-6 mb-3">
-                            <a href="#">
-                                <div class="card bg-white border-0 h-100 d-flex justify-content-center">
-                                    <img src="~/images/payment/visa.jpg" class="card-img" alt="Visa" />
-                                </div>
-                            </a>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-3 col-md-4 col-xl-6 mb-3">
-                            <a href="#">
-                                <div class="card bg-white border-0 h-100 p-1 d-flex justify-content-center">
-                                    <img src="~/images/payment/bpi.png" class="card-img" alt="BPI" />
-                                </div>
-                            </a>
-                        </div>
-                        <div class="col-3 col-md-4 col-xl-6 mb-3">
-                            <a href="#">
-                                <div class="card bg-white border-0 h-100 p-1 d-flex justify-content-center">
-                                    <img src="~/images/payment/coinsph.jpg" class="card-img" alt="Coins.ph" />
-                                </div>
-                            </a>
-                        </div>
+                <!-- Payment Options -->
+                <div>
+                    <h6 class="text-lg font-semibold mb-3">PAYMENT</h6>
+                    <div class="grid grid-cols-3 gap-2">
+                        <img src="~/images/payment/gcash.png" class="w-12 h-auto" alt="GCash">
+                        <img src="~/images/payment/maya.jpg" class="w-12 h-auto" alt="Maya">
+                        <img src="~/images/payment/mastercard.png" class="w-12 h-auto" alt="Mastercard">
+                        <img src="~/images/payment/visa.jpg" class="w-12 h-auto" alt="Visa">
+                        <img src="~/images/payment/bpi.png" class="w-12 h-auto" alt="BPI">
+                        <img src="~/images/payment/coinsph.jpg" class="w-12 h-auto" alt="Coins.ph">
                     </div>
                 </div>
 
-                <hr class="w-100 clearfix d-md-none" />
-
-                <div class="col-md-4 col-lg-3 col-xl-3 mx-auto mt-3">
-                    <h6 class="text-uppercase mb-4 font-weight-bold">Contact</h6>
-                    <p><i class="fas fa-home mr-3"></i> Matina, Davao City 8000, PH</p>
-                    <p><i class="fas fa-envelope mr-3"></i> palit.ph@gmail.com</p>
-                    <p><i class="fas fa-phone mr-3"></i> + 63 912 345 6789</p>
-                    <p><i class="fas fa-print mr-3"></i> + 63 992 424 3124</p>
+                <!-- Contact Information -->
+                <div>
+                    <h6 class="text-lg font-semibold mb-3">CONTACT</h6>
+                    <ul class="text-sm space-y-2">
+                        <li><i class="ri-map-pin-fill mr-2"></i> Matina, Davao City 8000, PH</li>
+                        <li><i class="ri-mail-fill mr-2"></i> palit.ph@gmail.com</li>
+                        <li><i class="ri-phone-fill mr-2"></i> +63 912 345 6789</li>
+                        <li><i class="ri-smartphone-fill mr-2"></i> +63 992 424 3124</li>
+                    </ul>
                 </div>
             </div>
-        </section>
 
-        <hr class="my-3">
+            <hr class="my-4 border-gray-400">
 
-        <section class="p-3 pt-0">
-            <div class="row d-flex align-items-center">
-                <div class="col-md-7 col-lg-8 text-center text-md-start">
-                    <div class="p-3">
-                        © 2024
-                        <a class="text-white text-decoration-none">PALIT</a>
-                    </div>
-                </div>
-                <div class="col-md-5 col-lg-4 ml-lg-0 text-center text-md-end">
-                    <a class="btn btn-outline-light btn-floating m-1"
-                       role="button">
-                        <i class="ri-facebook-circle-fill"></i>
-                    </a>
-
-                    <a class="btn btn-outline-light btn-floating m-1"
-                       role="button">
-                        <i class="ri-mail-fill"></i>
-                    </a>
-
-                    <a class="btn btn-outline-light btn-floating m-1"
-                       role="button">
-                        <i class="ri-instagram-fill"></i>
-                    </a>
+            <!-- Footer Bottom Section -->
+            <div class="flex flex-col md:flex-row justify-between items-center text-sm">
+                <p>© 2025 <span class="font-semibold">PALIT</span>. All Rights Reserved.</p>
+                <div class="flex space-x-4 mt-2 md:mt-0">
+                    <a href="#" class="text-white text-lg hover:text-gray-200"><i class="ri-facebook-circle-fill"></i></a>
+                    <a href="#" class="text-white text-lg hover:text-gray-200"><i class="ri-mail-fill"></i></a>
+                    <a href="#" class="text-white text-lg hover:text-gray-200"><i class="ri-instagram-fill"></i></a>
                 </div>
             </div>
-        </section>
-    </div>
-</footer>
+        </div>
+    </footer>
+}

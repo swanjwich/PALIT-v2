@@ -4,11 +4,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using it15_palit.Data;
+using cce106_palit.Data;
 
 #nullable disable
 
-namespace it15_palit.Migrations
+namespace cce106_palit.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
     partial class ApplicationDbContextModelSnapshot : ModelSnapshot
@@ -22,7 +22,7 @@ namespace it15_palit.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("it15_palit.Entity.Cart", b =>
+            modelBuilder.Entity("cce106_palit.Entity.Cart", b =>
                 {
                     b.Property<int>("Customer_Id")
                         .HasColumnType("int");
@@ -49,7 +49,7 @@ namespace it15_palit.Migrations
                     b.ToTable("Carts");
                 });
 
-            modelBuilder.Entity("it15_palit.Entity.Category", b =>
+            modelBuilder.Entity("cce106_palit.Entity.Category", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -66,6 +66,9 @@ namespace it15_palit.Migrations
                     b.Property<string>("Image_url")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("Is_Deleted")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -79,7 +82,7 @@ namespace it15_palit.Migrations
                     b.ToTable("Categories");
                 });
 
-            modelBuilder.Entity("it15_palit.Entity.Customer", b =>
+            modelBuilder.Entity("cce106_palit.Entity.Customer", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -88,16 +91,13 @@ namespace it15_palit.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Address")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<string>("Contact_Number")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("Created_at")
+                    b.Property<DateTime>("Created_At")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Display_Picture")
@@ -105,12 +105,16 @@ namespace it15_palit.Migrations
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<DateTime?>("Email_verified_at")
-                        .HasColumnType("datetime2");
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<bool>("IsVerified")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("Is_Deactivated")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("Is_Deleted")
                         .HasColumnType("bit");
 
                     b.Property<string>("Name")
@@ -122,13 +126,21 @@ namespace it15_palit.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("Updated_at")
+                    b.Property<string>("PasswordResetToken")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("ResetTokenExpiry")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("Updated_At")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Username")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("VerificationToken")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -136,12 +148,48 @@ namespace it15_palit.Migrations
                         .IsUnique();
 
                     b.HasIndex("Username")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasFilter("[Username] IS NOT NULL");
 
                     b.ToTable("Customers");
                 });
 
-            modelBuilder.Entity("it15_palit.Entity.Order", b =>
+            modelBuilder.Entity("cce106_palit.Entity.Notification", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("CustomerId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsRead")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Link")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Message")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CustomerId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Notifications");
+                });
+
+            modelBuilder.Entity("cce106_palit.Entity.Order", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -152,7 +200,7 @@ namespace it15_palit.Migrations
                     b.Property<DateTime>("Created_At")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("Customer_Id")
+                    b.Property<int?>("Customer_Id")
                         .HasColumnType("int");
 
                     b.Property<decimal>("Grand_Total")
@@ -177,7 +225,7 @@ namespace it15_palit.Migrations
                     b.ToTable("Orders");
                 });
 
-            modelBuilder.Entity("it15_palit.Entity.OrderDetail", b =>
+            modelBuilder.Entity("cce106_palit.Entity.OrderDetail", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -209,7 +257,7 @@ namespace it15_palit.Migrations
                     b.ToTable("OrderDetails");
                 });
 
-            modelBuilder.Entity("it15_palit.Entity.Payment", b =>
+            modelBuilder.Entity("cce106_palit.Entity.Payment", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -249,7 +297,7 @@ namespace it15_palit.Migrations
                     b.ToTable("Payments");
                 });
 
-            modelBuilder.Entity("it15_palit.Entity.Product", b =>
+            modelBuilder.Entity("cce106_palit.Entity.Product", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -269,6 +317,9 @@ namespace it15_palit.Migrations
                     b.Property<string>("Image_url")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("Is_Deleted")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -278,7 +329,7 @@ namespace it15_palit.Migrations
                         .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<int>("Stock_quantity")
+                    b.Property<int>("StockQuantity")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("Updated_at")
@@ -291,7 +342,7 @@ namespace it15_palit.Migrations
                     b.ToTable("Products");
                 });
 
-            modelBuilder.Entity("it15_palit.Entity.Status", b =>
+            modelBuilder.Entity("cce106_palit.Entity.Status", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -317,41 +368,80 @@ namespace it15_palit.Migrations
                         new
                         {
                             Id = 1,
-                            Created_at = new DateTime(2024, 10, 9, 1, 55, 5, 433, DateTimeKind.Utc).AddTicks(8688),
+                            Created_at = new DateTime(2025, 5, 3, 4, 36, 50, 32, DateTimeKind.Utc).AddTicks(5105),
                             Name = "Pending",
-                            Updated_at = new DateTime(2024, 10, 9, 1, 55, 5, 433, DateTimeKind.Utc).AddTicks(8688)
+                            Updated_at = new DateTime(2025, 5, 3, 4, 36, 50, 32, DateTimeKind.Utc).AddTicks(5106)
                         },
                         new
                         {
                             Id = 2,
-                            Created_at = new DateTime(2024, 10, 9, 1, 55, 5, 433, DateTimeKind.Utc).AddTicks(8690),
+                            Created_at = new DateTime(2025, 5, 3, 4, 36, 50, 32, DateTimeKind.Utc).AddTicks(5109),
                             Name = "To Ship",
-                            Updated_at = new DateTime(2024, 10, 9, 1, 55, 5, 433, DateTimeKind.Utc).AddTicks(8690)
+                            Updated_at = new DateTime(2025, 5, 3, 4, 36, 50, 32, DateTimeKind.Utc).AddTicks(5110)
                         },
                         new
                         {
                             Id = 3,
-                            Created_at = new DateTime(2024, 10, 9, 1, 55, 5, 433, DateTimeKind.Utc).AddTicks(8692),
+                            Created_at = new DateTime(2025, 5, 3, 4, 36, 50, 32, DateTimeKind.Utc).AddTicks(5111),
                             Name = "To Receive",
-                            Updated_at = new DateTime(2024, 10, 9, 1, 55, 5, 433, DateTimeKind.Utc).AddTicks(8692)
+                            Updated_at = new DateTime(2025, 5, 3, 4, 36, 50, 32, DateTimeKind.Utc).AddTicks(5112)
                         },
                         new
                         {
                             Id = 4,
-                            Created_at = new DateTime(2024, 10, 9, 1, 55, 5, 433, DateTimeKind.Utc).AddTicks(8693),
+                            Created_at = new DateTime(2025, 5, 3, 4, 36, 50, 32, DateTimeKind.Utc).AddTicks(5113),
                             Name = "Completed",
-                            Updated_at = new DateTime(2024, 10, 9, 1, 55, 5, 433, DateTimeKind.Utc).AddTicks(8694)
+                            Updated_at = new DateTime(2025, 5, 3, 4, 36, 50, 32, DateTimeKind.Utc).AddTicks(5114)
                         },
                         new
                         {
                             Id = 5,
-                            Created_at = new DateTime(2024, 10, 9, 1, 55, 5, 433, DateTimeKind.Utc).AddTicks(8695),
+                            Created_at = new DateTime(2025, 5, 3, 4, 36, 50, 32, DateTimeKind.Utc).AddTicks(5115),
                             Name = "Cancelled",
-                            Updated_at = new DateTime(2024, 10, 9, 1, 55, 5, 433, DateTimeKind.Utc).AddTicks(8695)
+                            Updated_at = new DateTime(2025, 5, 3, 4, 36, 50, 32, DateTimeKind.Utc).AddTicks(5115)
                         });
                 });
 
-            modelBuilder.Entity("it15_palit.Entity.User", b =>
+            modelBuilder.Entity("cce106_palit.Entity.StockIn", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Amount")
+                        .HasColumnType("int");
+
+                    b.Property<string>("BatchNumber")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTime>("DateReceived")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateOnly>("ExpirationDate")
+                        .HasColumnType("date");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ReceivedBy")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Remarks")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("StockIns");
+                });
+
+            modelBuilder.Entity("cce106_palit.Entity.User", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -364,27 +454,32 @@ namespace it15_palit.Migrations
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("Email_Verified_At")
-                        .HasColumnType("datetime2");
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<bool>("IsVerified")
                         .HasColumnType("bit");
 
                     b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("Password")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("Role")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<DateTime>("Updated_At")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Username")
-                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("VerificationToken")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -395,36 +490,26 @@ namespace it15_palit.Migrations
                         new
                         {
                             Id = 1,
-                            Created_At = new DateTime(2024, 10, 9, 1, 55, 5, 433, DateTimeKind.Utc).AddTicks(8382),
-                            Email = "hadmin@email.com",
-                            IsVerified = false,
+                            Created_At = new DateTime(2025, 5, 3, 4, 36, 50, 32, DateTimeKind.Utc).AddTicks(4637),
+                            Email = "hannahtano05@gmail.com",
+                            IsVerified = true,
                             Name = "Hannah Tano",
-                            Password = "password",
-                            Updated_At = new DateTime(2024, 10, 9, 1, 55, 5, 433, DateTimeKind.Utc).AddTicks(8386),
-                            Username = "hadmin"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Created_At = new DateTime(2024, 10, 9, 1, 55, 5, 433, DateTimeKind.Utc).AddTicks(8388),
-                            Email = "odmin@email.com",
-                            IsVerified = false,
-                            Name = "Oscar Queman",
-                            Password = "password",
-                            Updated_At = new DateTime(2024, 10, 9, 1, 55, 5, 433, DateTimeKind.Utc).AddTicks(8388),
-                            Username = "odmin"
+                            Password = "AQAAAAIAAYagAAAAELBZLJoNbTCB1DA7jr0aF56e9PBmGCg/5ORmvh6gnhTRnMGTGJm/dCoYt9iCWTFzbg==",
+                            Role = "Super Admin",
+                            Updated_At = new DateTime(2025, 5, 3, 4, 36, 50, 32, DateTimeKind.Utc).AddTicks(4641),
+                            Username = "admin"
                         });
                 });
 
-            modelBuilder.Entity("it15_palit.Entity.Cart", b =>
+            modelBuilder.Entity("cce106_palit.Entity.Cart", b =>
                 {
-                    b.HasOne("it15_palit.Entity.Customer", "Customer")
+                    b.HasOne("cce106_palit.Entity.Customer", "Customer")
                         .WithMany("Carts")
                         .HasForeignKey("Customer_Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("it15_palit.Entity.Product", "Product")
+                    b.HasOne("cce106_palit.Entity.Product", "Product")
                         .WithMany("Carts")
                         .HasForeignKey("Product_Id")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -435,15 +520,31 @@ namespace it15_palit.Migrations
                     b.Navigation("Product");
                 });
 
-            modelBuilder.Entity("it15_palit.Entity.Order", b =>
+            modelBuilder.Entity("cce106_palit.Entity.Notification", b =>
                 {
-                    b.HasOne("it15_palit.Entity.Customer", "Customer")
+                    b.HasOne("cce106_palit.Entity.Customer", "Customer")
+                        .WithMany("Notifications")
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("cce106_palit.Entity.User", "User")
+                        .WithMany("Notifications")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.Navigation("Customer");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("cce106_palit.Entity.Order", b =>
+                {
+                    b.HasOne("cce106_palit.Entity.Customer", "Customer")
                         .WithMany("Orders")
                         .HasForeignKey("Customer_Id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.SetNull);
 
-                    b.HasOne("it15_palit.Entity.Status", "Status")
+                    b.HasOne("cce106_palit.Entity.Status", "Status")
                         .WithMany("Orders")
                         .HasForeignKey("Status_Id")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -454,15 +555,15 @@ namespace it15_palit.Migrations
                     b.Navigation("Status");
                 });
 
-            modelBuilder.Entity("it15_palit.Entity.OrderDetail", b =>
+            modelBuilder.Entity("cce106_palit.Entity.OrderDetail", b =>
                 {
-                    b.HasOne("it15_palit.Entity.Order", "Order")
+                    b.HasOne("cce106_palit.Entity.Order", "Order")
                         .WithMany("OrderDetails")
                         .HasForeignKey("Order_Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("it15_palit.Entity.Product", "Product")
+                    b.HasOne("cce106_palit.Entity.Product", "Product")
                         .WithMany("OrderDetails")
                         .HasForeignKey("Product_Id")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -473,9 +574,9 @@ namespace it15_palit.Migrations
                     b.Navigation("Product");
                 });
 
-            modelBuilder.Entity("it15_palit.Entity.Payment", b =>
+            modelBuilder.Entity("cce106_palit.Entity.Payment", b =>
                 {
-                    b.HasOne("it15_palit.Entity.Order", "Order")
+                    b.HasOne("cce106_palit.Entity.Order", "Order")
                         .WithMany("Payments")
                         .HasForeignKey("Order_Id")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -484,9 +585,9 @@ namespace it15_palit.Migrations
                     b.Navigation("Order");
                 });
 
-            modelBuilder.Entity("it15_palit.Entity.Product", b =>
+            modelBuilder.Entity("cce106_palit.Entity.Product", b =>
                 {
-                    b.HasOne("it15_palit.Entity.Category", "Category")
+                    b.HasOne("cce106_palit.Entity.Category", "Category")
                         .WithMany("Products")
                         .HasForeignKey("Category_id")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -495,35 +596,55 @@ namespace it15_palit.Migrations
                     b.Navigation("Category");
                 });
 
-            modelBuilder.Entity("it15_palit.Entity.Category", b =>
+            modelBuilder.Entity("cce106_palit.Entity.StockIn", b =>
+                {
+                    b.HasOne("cce106_palit.Entity.Product", "Product")
+                        .WithMany("StockIns")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Product");
+                });
+
+            modelBuilder.Entity("cce106_palit.Entity.Category", b =>
                 {
                     b.Navigation("Products");
                 });
 
-            modelBuilder.Entity("it15_palit.Entity.Customer", b =>
+            modelBuilder.Entity("cce106_palit.Entity.Customer", b =>
                 {
                     b.Navigation("Carts");
+
+                    b.Navigation("Notifications");
 
                     b.Navigation("Orders");
                 });
 
-            modelBuilder.Entity("it15_palit.Entity.Order", b =>
+            modelBuilder.Entity("cce106_palit.Entity.Order", b =>
                 {
                     b.Navigation("OrderDetails");
 
                     b.Navigation("Payments");
                 });
 
-            modelBuilder.Entity("it15_palit.Entity.Product", b =>
+            modelBuilder.Entity("cce106_palit.Entity.Product", b =>
                 {
                     b.Navigation("Carts");
 
                     b.Navigation("OrderDetails");
+
+                    b.Navigation("StockIns");
                 });
 
-            modelBuilder.Entity("it15_palit.Entity.Status", b =>
+            modelBuilder.Entity("cce106_palit.Entity.Status", b =>
                 {
                     b.Navigation("Orders");
+                });
+
+            modelBuilder.Entity("cce106_palit.Entity.User", b =>
+                {
+                    b.Navigation("Notifications");
                 });
 #pragma warning restore 612, 618
         }

@@ -1,54 +1,299 @@
-﻿<nav class="navbar navbar-expand-md navbar-light bg-white border-bottom box-shadow mb-3 pt-4 px-5 fixed-top">
-    <div class="container-fluid">
-        <a class="navbar-brand fw-bold me-5" asp-area="" asp-controller="Home" asp-action="Index">
-            <img src="~/images/logo.png" width="60" height="50" alt="Logo" />
-            <span class="text-blue">PALIT</span>
-        </a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="navbar-collapse collapse justify-content-between">
-            <ul class="navbar-nav justify-content-between">
-                <li class="nav-item">
-                    <a class="nav-link @((ViewContext.RouteData.Values["action"].ToString() == "Index" && ViewContext.RouteData.Values["controller"].ToString() == "Home") ? "active" : "")" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link @((ViewContext.RouteData.Values["action"].ToString() == "Shop" && ViewContext.RouteData.Values["controller"].ToString() == "Home") ? "active" : "")" asp-area="" asp-controller="Home" asp-action="Shop">Shop</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#about-us">About</a>
-                </li>
-            </ul>
+﻿@using System.Security.Claims
 
-            <div class="d-flex justify-content-center align-items-center w-50">
-                <form method="get" asp-action="Shop" asp-controller="Home" class="w-100">
-                    <div class="d-flex justify-content-center w-100">
-                        <input type="search" name="searchQuery" class="form-control rounded-3" placeholder="Search in PALIT Supermarket" />
-                        <button type="submit" class="btn btn-light text-blue"><i class="ri-search-line"></i></button>
-                     </div>
-                </form>
+@{
+    var isAuthPage = ViewContext.RouteData.Values["action"]?.ToString() == "Login" ||
+                     ViewContext.RouteData.Values["action"]?.ToString() == "Registration" ||
+                     ViewContext.RouteData.Values["action"]?.ToString() == "VerifyNotice" ||
+                     ViewContext.RouteData.Values["action"]?.ToString() == "ResetPassword" ||
+                     ViewContext.RouteData.Values["action"]?.ToString() == "ProfileSetup" ||
+                     ViewContext.RouteData.Values["action"]?.ToString() == "ForgotPassword";
+    var isTermsPrivacyPage = ViewContext.RouteData.Values["action"]?.ToString() == "Terms" ||
+                      ViewContext.RouteData.Values["action"]?.ToString() == "Privacy" ||
+                      ViewContext.RouteData.Values["action"]?.ToString() == "Return";
+
+    var isAuthenticated = User?.Identity != null && User.Identity.IsAuthenticated;
+    var userName = User.FindFirst(ClaimTypes.Name)?.Value ?? "User";
+    var displayPicture = User.FindFirst("DisplayPicture")?.Value ?? "images/profile-user.png";
+    var isCartActive = ViewContext.RouteData.Values["action"]?.ToString() == "Cart";
+}
+
+@if (!isTermsPrivacyPage)
+{
+    <nav class="fixed top-0 w-full bg-white shadow-md z-50 dark:bg-gray-800/95 dark:backdrop-blur-sm dark:shadow-gray-900/50 transition-colors duration-200">
+        @if (!isAuthPage)
+        {
+            <div class="w-full flex justify-end bg-gray-100 dark:bg-gray-900/80 py-2 px-2 transition-colors duration-200">
+                <div class="max-w-5xl w-full mx-auto flex justify-between items-center px-2 space-x-3">
+                    <div class="flex bg-gray-100 dark:bg-gray-900 text-center items-center ml-2 py-2 text-sm text-gray-600 dark:text-gray-300">
+                        <span class="mr-2">Follow us on:</span>
+                        <a href="https://facebook.com" target="_blank" class="mr-2 inline-flex items-center space-x-1 text-blue-600 hover:underline dark:hover:text-blue-600 ">
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.879v-6.987H7.898v-2.892h2.54V9.845c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562v1.875h2.773l-.443 2.892h-2.33v6.987C18.343 21.128 22 16.991 22 12z" /></svg>
+                        </a>
+                        @* <span class="mx-2">|</span> *@
+                        <a href="https://instagram.com" target="_blank" class="inline-flex items-center space-x-1 text-pink-600 hover:underline dark:hover:text-pink-400">
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M7.75 2A5.75 5.75 0 0 0 2 7.75v8.5A5.75 5.75 0 0 0 7.75 22h8.5A5.75 5.75 0 0 0 22 16.25v-8.5A5.75 5.75 0 0 0 16.25 2h-8.5zm0 1.5h8.5A4.25 4.25 0 0 1 20.5 7.75v8.5A4.25 4.25 0 0 1 16.25 20.5h-8.5A4.25 4.25 0 0 1 3.5 16.25v-8.5A4.25 4.25 0 0 1 7.75 3.5zM12 7a5 5 0 1 0 0 10 5 5 0 0 0 0-10zm0 1.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 0 1 0-7zm5.25-.75a1.25 1.25 0 1 1-2.5 0 1.25 1.25 0 0 1 2.5 0z" /></svg>
+                        </a>
+                    </div>
+
+                    @if (!isAuthenticated)
+                    {
+                        <div class="flex items-center justify-end">
+                            <a asp-controller="Auth" asp-action="Login" class="mr-3 text-xs text-gray-500 dark:text-gray-300 hover:text-[var(--color-primary)] dark:hover:text-blue-400 font-semibold transition-colors">LOGIN</a>
+                            <a asp-controller="Auth" asp-action="Registration" class="text-xs text-gray-500 dark:text-gray-300 hover:text-[var(--color-primary)] dark:hover:text-blue-400 font-semibold transition-colors">SIGNUP</a>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="relative flex items-center space-x-2">
+                            <!-- Notification Bell -->
+                            <div class="relative mr-4">
+                                <button id="notificationBtn" class="relative p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+                                    <svg class="w-4 h-4 text-gray-600 dark:text-gray-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M15 17h5l-1.405-1.405C18.21 14.79 18 13.918 18 13V9a6 6 0 10-12 0v4c0 .918-.21 1.79-.595 2.595L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                                    </svg>
+                                    <!-- Red dot -->
+                                    <span id="notificationDot" class="absolute top-1 right-1 block w-2 h-2 bg-red-500 rounded-full"></span>
+                                </button>
+
+                                <!-- Notification Dropdown -->
+                                <div id="notificationDropdown" class="hidden absolute right-0 mt-2 w-80 bg-white dark:bg-gray-800 rounded-lg shadow-lg z-50 border border-gray-200 dark:border-gray-700">
+                                    <div class="px-4 py-2 text-sm font-semibold text-gray-700 dark:text-gray-200 border-b border-gray-200 dark:border-gray-700">Notifications</div>
+                                    <div id="notificationList" class="max-h-60 overflow-y-auto divide-y divide-gray-100 dark:divide-gray-700">
+                                        <p class="p-4 text-sm text-gray-500 dark:text-gray-400">No new notifications.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- User Dropdown -->
+                            <div class="relative">
+                                <button id="userDropdownBtn" class="cursor-pointer flex items-center space-x-2 px-2 rounded-md hover:text-gray-200 dark:hover:bg-text-700 transition-colors">
+                                    <img src="~/@displayPicture" alt="User Avatar" class="w-6 h-6 rounded-full object-cover shadow-sm">
+                                    <span class="text-sm font-medium text-gray-600 dark:text-gray-300 hidden sm:block">@userName</span>
+                                </button>
+
+                                <!-- Dropdown Menu -->
+                                <div id="userDropdownMenu" class="absolute right-0 mt-2 w-52 bg-white dark:bg-gray-800 rounded-md shadow-lg hidden z-50 dark:border-gray-700">
+                                    <ul class="py-2 text-sm text-gray-700 dark:text-gray-300 space-y-1">
+                                        <!-- Profile -->
+                                        <li>
+                                            <a asp-controller="Account" asp-action="Profile" fragment="password" class="flex items-center px-4 py-2 space-x-3 hover:bg-gray-100 dark:hover:bg-gray-700">
+                                                <svg class="w-5 h-5 text-gray-500 dark:text-gray-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                                                    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4z" />
+                                                    <path d="M6 20v-2c0-2.21 3.58-4 6-4s6 1.79 6 4v2" />
+                                                </svg>
+                                                <span>Profile</span>
+                                            </a>
+                                        </li>
+
+                                        <!-- Orders -->
+                                        <li>
+                                            <a asp-controller="Account" asp-action="Orders" class="flex items-center px-4 py-2 space-x-3 hover:bg-gray-100 dark:hover:bg-gray-700">
+                                                <svg class="w-5 h-5 text-gray-500 dark:text-gray-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                                                    <path d="M3 3h18v4H3z" />
+                                                    <path d="M3 7h18v13H3z" />
+                                                    <path d="M16 21v-4H8v4" />
+                                                </svg>
+                                                <span>Orders</span>
+                                            </a>
+                                        </li>
+
+                                        <hr class="text-gray-300 dark:text-gray-300"/>
+
+                                        <!-- Dark Mode Toggle -->
+                                        <li>
+                                            <div onclick="toggleTheme()" class="flex items-center justify-between px-4 py-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700">
+                                                <div class="flex items-center space-x-3">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-blue-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                        <path d="M21 12.79A9 9 0 1 1 12.79 3a7 7 0 0 0 8.21 9.79z" />
+                                                    </svg>
+                                                    <span>Dark Mode</span>
+                                                </div>
+
+                                                <div class="relative w-8 h-5">
+                                                    <svg id="toggleIcon" xmlns="http://www.w3.org/2000/svg" class="absolute inset-0 w-8 h-5 transition-all duration-300" viewBox="0 0 24 24" fill="currentColor">
+                                                        <path id="togglePath" d="M8 7C5.23858 7 3 9.23858 3 12C3 14.7614 5.23858 17 8 17H16C18.7614 17 21 14.7614 21 12C21 9.23858 18.7614 7 16 7H8ZM8 5H16C19.866 5 23 8.13401 23 12C23 15.866 19.866 19 16 19H8C4.13401 19 1 15.866 1 12C1 8.13401 4.13401 5 8 5ZM8 15C6.34315 15 5 13.6569 5 12C5 10.3431 6.34315 9 8 9C9.65685 9 11 10.3431 11 12C11 13.6569 9.65685 15 8 15Z" />
+                                                    </svg>
+                                                </div>
+                                            </div>
+                                        </li>
+
+
+                                        <!-- Settings -->
+                                        <li>
+                                            <a asp-controller="Account" asp-action="Settings" class="flex items-center px-4 py-2 space-x-3 hover:bg-gray-100 dark:hover:bg-gray-700">
+                                                <svg class="w-5 h-5 text-gray-500 dark:text-gray-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                                                    <circle cx="12" cy="12" r="3" />
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28Z" />
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                                                </svg>
+                                                <span>Settings</span>
+
+                                            </a>
+                                        </li>
+
+                                        <hr class="text-gray-300 dark:text-gray-300" />
+
+                                        <!-- Logout -->
+                                        <li>
+                                            <form id="logout-account-form" method="post" asp-controller="Auth" asp-action="Logout">
+                                                @Html.AntiForgeryToken()
+                                                <button onclick="confirmLogout()" type="button" class="cursor-pointer flex items-center w-full px-4 py-2 space-x-3 hover:bg-gray-100 dark:hover:bg-gray-700 text-red-600 dark:text-red-400">
+                                                    <svg class="w-5 h-5 text-red-500 dark:text-red-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                                                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                                                        <polyline points="16 17 21 12 16 7" />
+                                                        <line x1="21" y1="12" x2="9" y2="12" />
+                                                    </svg>
+                                                    <span>Logout</span>
+                                                </button>
+                                            </form>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+
+
+
+                        </div>
+                    }
+
+                </div>
             </div>
+        }
 
-
-            <div class="d-flex justify-content-end align-items-center">
-                @if (Context.User.Identity.Name != null)
+        <div class="mx-auto py-2 max-w-5xl px-5 sm:px-6 lg:px-3">
+            <div class="relative flex h-16 items-center justify-between">
+                @if (!isAuthPage)
                 {
-                    <a class="text-decoration-none me-2" asp-area="" asp-controller="Shop" asp-action="Cart">
-                        <i class="home-icon ri-shopping-cart-line fs-2 text-blue"></i>
-                    </a>
+                    <!-- Mobile Menu Button -->
+                    <div class="absolute inset-y-0 left-0 flex items-center sm:hidden">
+                        <button id="menu-toggle" type="button" class="relative inline-flex items-center justify-center rounded-md p-2 text-gray-500 hover:bg-gray-300 dark:hover:bg-gray-700 hover:text-gray-500 dark:hover:text-gray-300 focus:outline-none transition-colors">
+                            <span class="sr-only">Open main menu</span>
+                            <svg id="menu-open" class="block size-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+                            </svg>
+                            <svg id="menu-close" class="hidden size-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
                 }
-                else
-                {
-                    <a class="text-decoration-none me-2" asp-area="" asp-controller="Auth" asp-action="Login">
-                        <i class="home-icon ri-shopping-cart-line fs-2 text-blue"></i>
-                    </a>
-                }
-              
-                @await Html.PartialAsync("_LoginPartial")
 
+                <!-- Logo & Navigation -->
+                <div class="flex items-center justify-center sm:justify-between w-full space-x-3">
+                    <!-- Logo Container -->
+                    <div class="flex items-center justify-center sm:justify-start w-full sm:w-auto">
+                        <div class="flex shrink-0 items-center">
+                            <a href="/" class="flex items-center">
+                                <img src="~/images/logo.png" class="w-auto h-12" alt="Logo">
+                                <span class="text-[#4a85c6] dark:text-blue-400 text-2xl font-bold hidden sm:block">PALIT</span>
+                            </a>
+                        </div>
+                    </div>
+
+                    @if (!isAuthPage)
+                    {
+                        <!-- Navigation Links -->
+                        <ul class="hidden sm:flex space-x-2 font-medium">
+                            <li><nav-link asp-controller="Home" asp-action="Index" active="false" class="dark:text-gray-300 dark:hover:text-blue-400">Home</nav-link></li>
+                            <li><nav-link asp-controller="Home" asp-action="Shop" active="false" class="dark:text-gray-300 dark:hover:text-blue-400">Shop</nav-link></li>
+                            <li><nav-link asp-controller="Home" asp-action="About" active="false" class="dark:text-gray-300 dark:hover:text-blue-400">About</nav-link></li>
+                        </ul>
+
+                        <!-- Search Bar -->
+                        <div class="hidden md:flex items-center mx-5">
+                            <form method="get" asp-action="Shop" asp-controller="Home" class="flex items-center bg-gray-200 dark:bg-gray-700 rounded-lg px-3 py-1 w-80 border border-gray-300 dark:border-gray-600 transition-colors">
+                                <input type="search" name="searchQuery" class="bg-transparent border-0 focus:ring-0 outline-none w-full text-sm py-1 dark:text-gray-300 dark:placeholder-gray-400" value="@ViewBag.SearchQuery" placeholder="Search in PALIT Supermarket">
+                                <button type="submit" class="text-[var(--color-primary)] dark:text-blue-400 ml-2"><i class="ri-search-line"></i></button>
+                            </form>
+                        </div>
+                        <a asp-controller="Shop" asp-action="Cart"
+                        class="relative p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200">
+                            <i class="@(isCartActive ? "ri-shopping-cart-fill text-[var(--color-primary)] dark:text-blue-400" : "ri-shopping-cart-line text-gray-700 dark:text-gray-300") text-2xl"></i>
+                            @if(isAuthenticated)
+                            {                               
+                            <span class="absolute -top-1 -right-1 inline-flex items-center justify-center text-xs font-bold @((int)(ViewData["CartCount"] ?? 0) > 0 ? "bg-red-500 dark:bg-red-600" : "bg-gray-400 dark:bg-gray-500") text-white rounded-full w-5 h-5 border-2 border-white dark:border-gray-800">
+                                @(ViewData["CartCount"] ?? 0)
+                            </span>
+                            }
+                    </a>
+
+                }
             </div>
-
         </div>
     </div>
+
+    @if (!isAuthPage)
+    {
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden sm:hidden bg-white dark:bg-gray-800 shadow-lg dark:shadow-gray-900/50 transition-colors">
+            <ul class="space-y-1 px-2 pt-2 pb-3">
+                <li><nav-link asp-controller="Home" asp-action="Index" active="false" class="dark:text-gray-300 dark:hover:text-blue-400">Home</nav-link></li>
+                <li><nav-link asp-controller="Home" asp-action="Shop" active="false" class="dark:text-gray-300 dark:hover:text-blue-400">Shop</nav-link></li>
+                <li><nav-link asp-controller="Home" asp-action="About" active="false" class="dark:text-gray-300 dark:hover:text-blue-400">About</nav-link></li>
+                <li>
+                    <form method="get" class="flex items-center bg-gray-200 dark:bg-gray-700 rounded-lg px-3 py-2 border border-gray-300 dark:border-gray-600 mt-2 transition-colors">
+                        <input type="search" name="searchQuery" class="bg-transparent border-0 focus:ring-0 outline-none w-full text-sm dark:text-gray-300 dark:placeholder-gray-400" placeholder="Search in PALIT Supermarket">
+                        <button type="submit" class="text-[var(--color-primary)] dark:text-blue-400 ml-2"><i class="ri-search-line"></i></button>
+                    </form>
+                </li>
+            </ul>
+        </div>
+    }
+    <script>
+        function confirmLogout() {
+            openModal({
+                title: 'Log Out',
+                message: 'Are you sure you want to log out?',
+                confirmText: 'Yes, log out',
+                cancelText: 'Cancel',
+                onConfirm: () => {
+                    document.getElementById('logout-account-form').submit();
+                }
+            });
+        }
+
+        document.getElementById('menu-toggle').addEventListener('click', function() {
+            const menu = document.getElementById('mobile-menu');
+            const menuOpen = document.getElementById('menu-open');
+            const menuClose = document.getElementById('menu-close');
+            menu.classList.toggle('hidden');
+            menuOpen.classList.toggle('hidden');
+            menuClose.classList.toggle('hidden');
+        });
+            // User dropdown toggle
+        const userDropdownBtn = document.getElementById('userDropdownBtn');
+        const userDropdownMenu = document.getElementById('userDropdownMenu');
+
+        if (userDropdownBtn) {
+            userDropdownBtn.addEventListener('click', function (e) {
+                e.stopPropagation();
+                userDropdownMenu.classList.toggle('hidden');
+            });
+
+            window.addEventListener('click', function () {
+                if (!userDropdownMenu.classList.contains('hidden')) {
+                    userDropdownMenu.classList.add('hidden');
+                }
+            });
+        }
+
+        const notificationBtn = document.getElementById('notificationBtn');
+        const notificationDropdown = document.getElementById('notificationDropdown');
+        const notificationDot = document.getElementById('notificationDot');
+
+            notificationBtn.addEventListener('click', () => {
+                notificationDropdown.classList.toggle('hidden');
+                notificationDot.classList.add('hidden');
+            });
+
+            document.addEventListener('click', function (event) {
+                if (!notificationDropdown.contains(event.target) && !notificationBtn.contains(event.target)) {
+                    notificationDropdown.classList.add('hidden');
+                }
+            });
+
+    </script>
 </nav>
+
+}

@@ -1,0 +1,49 @@
+﻿@{
+    var message = TempData["Message"] as string;
+    var messageType = TempData["MessageType"] as string ?? "info";
+    var bgColor = messageType switch
+    {
+        "success" => "bg-green-400 text-white",
+        "error" => "bg-red-400 text-white",
+        "warning" => "bg-yellow-400 text-black",
+        _ => "bg-blue-400 text-white"
+    };
+    var icon = messageType switch
+    {
+        "success" => "text-green-500 bg-green-100",
+        "error" => "text-red-500 bg-red-100",
+        "warning" => "text-orange-500 bg-orange-100",
+        _ => "text-blue-500 bg-blue-100"
+    };
+    var svgPath = messageType switch
+    {
+        "success" => "M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 8.207-4 4a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L9 10.586l3.293-3.293a1 1 0 0 1 1.414 1.414Z", 
+        "error" => "M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 11.793a1 1 0 1 1-1.414 1.414L10 11.414l-2.293 2.293a1 1 0 0 1-1.414-1.414L8.586 10 6.293 7.707a1 1 0 0 1 1.414-1.414L10 8.586l2.293-2.293a1 1 0 0 1 1.414 1.414L11.414 10l2.293 2.293Z", 
+        "warning" => "M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM10 14a1 1 0 1 1 0-2 1 1 0 0 1 0 2Zm1-4a1 1 0 0 1-2 0V6a1 1 0 0 1 2 0v4Z",
+        _ => "M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM10 14a1 1 0 1 1 0-2 1 1 0 0 1 0 2Zm1-4a1 1 0 0 1-2 0V6a1 1 0 0 1 2 0v4Z"
+    };
+}
+
+@if (!string.IsNullOrEmpty(message))
+{
+    <div id="toast" class="fixed top-34 right-4 @bgColor shadow-lg rounded-lg p-4 z-50 flex items-center max-w-xs animate-toast-in transition-opacity duration-500">
+        <div class="inline-flex items-center justify-center shrink-0 w-8 h-8 @icon rounded-lg">
+            <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                <path d="@svgPath" />
+            </svg>
+            <span class="sr-only">@messageType icon</span>
+        </div>
+        <div class="ms-3 text-sm font-normal">@message</div>
+
+    </div>
+}
+
+<script>
+    setTimeout(() => {
+        const toast = document.getElementById("toast");
+        if (toast) {
+            toast.classList.add("opacity-0", "transition-opacity", "duration-500");
+            setTimeout(() => toast.remove(), 500);
+        }
+    }, 4000);
+</script>
